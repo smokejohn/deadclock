@@ -1,0 +1,24 @@
+.cache/
+build/
+compile_commands.json
+
+# C++ objects and libs
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dll
+*.dylib
+
+
+*.swp
+debug/
+saves/
+
+CMakeFiles/
+CMakeCache.txt
+CMakeLists.txt.user
