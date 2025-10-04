@@ -30,7 +30,8 @@ set(SOURCES
 
 qt_add_executable(deadclock ${SOURCES}
     src/PausableTimer.h src/PausableTimer.cpp
-    src/TimerController.h src/TimerController.cpp)
+    src/TimerController.h src/TimerController.cpp
+    src/data/KeyMap.h)
 
 qt_add_resources(deadclock "ui"
     PREFIX "/ui"

@@ -123,9 +123,9 @@ ApplicationWindow {
                     id: pause_keybind_button
                     text: {
                         if (window_controller.pause_keybind_active) {
-                            return "Setting key: " + window_controller.pause_key
+                            return "Setting key: " + window_controller.get_key_name(window_controller.pause_key)
                         } else {
-                            return "Start/Stop Timer: " + window_controller.pause_key
+                            return "Start/Stop Timer: " + window_controller.get_key_name(window_controller.pause_key)
                         }
                     }
                     highlighted: window_controller.pause_keybind_active
@@ -139,9 +139,9 @@ ApplicationWindow {
                     id: set_keybind_button
                     text: {
                         if (window_controller.set_keybind_active) {
-                            return "Setting key: " + window_controller.set_key
+                            return "Setting key: " + window_controller.get_key_name(window_controller.set_key)
                         } else {
-                            return "Set Timer: " + window_controller.set_key
+                            return "Set Timer: " + window_controller.get_key_name(window_controller.set_key)
                         }
                     }
                     highlighted: window_controller.set_keybind_active

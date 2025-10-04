@@ -23,6 +23,8 @@ public:
     Q_INVOKABLE void toggle_overlay_locked(bool lock);
     Q_INVOKABLE void toggle_keyhook_engaged(bool engaged);
 
+    Q_INVOKABLE QString get_key_name(int keycode);
+
     Q_INVOKABLE void toggle_pause_keybind_active();
     bool is_pause_keybind_active();
     int get_pause_key();

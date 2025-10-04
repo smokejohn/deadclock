@@ -3,6 +3,8 @@
 #include <QQmlContext>
 #include <QIcon>
 
+#include "data/KeyMap.h"
+
 WindowController::WindowController(QObject* parent)
     : QObject(parent)
     , keyhook(new Keyhook(this))
@@ -125,4 +127,8 @@ void WindowController::set_set_keybind_active(bool active) {
         return;
     keybinding_set_key = active;
     emit set_keybind_active_changed();
+}
+
+QString WindowController::get_key_name(int keycode) {
+    return QString::fromStdString(KeyMap::get_key(keycode));
 }

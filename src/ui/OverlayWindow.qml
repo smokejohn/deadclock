@@ -10,7 +10,7 @@ Window {
     objectName: "overlay_window"
     visible: false
     width: 100
-    height: 75
+    height: 100
     color: "transparent"
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
