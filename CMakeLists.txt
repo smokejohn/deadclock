@@ -17,15 +17,17 @@ find_package(Qt6 REQUIRED COMPONENTS
     QuickControls2
     TextToSpeech
 )
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Core)
 
-qt_standard_project_setup(REQUIRES 6.9)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(TESSERACT REQUIRED tesseract)
+
+qt_standard_project_setup(REQUIRES 6.8)
 
 set(SOURCES
     src/main.cpp
     src/WindowController.cpp
     src/Keyhook.cpp
+    src/ClockReader.cpp
 )
 
 qt_add_executable(deadclock ${SOURCES}
@@ -51,7 +53,13 @@ qt_add_resources(deadclock "images"
 
 set_target_properties(deadclock PROPERTIES WIN32_EXECUTABLE TRUE)
 
-target_include_directories(deadclock PRIVATE src)
+target_include_directories(deadclock PRIVATE 
+    src
+    ${TESSERACT_INCLUDE_DIRS}
+)
+
+link_directories(${TESSERACT_LIBRARY_DIRS})
+
 
 target_link_libraries(deadclock PRIVATE
     Qt6::Core
@@ -62,4 +70,5 @@ target_link_libraries(deadclock PRIVATE
     Qt6::QuickControls2
     Qt6::TextToSpeech
     uiohook
+    tesseract
 )

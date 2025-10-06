@@ -4,11 +4,13 @@
 #include <QIcon>
 
 #include "data/KeyMap.h"
+#include <tesseract/baseapi.h>
 
 WindowController::WindowController(QObject* parent)
     : QObject(parent)
     , keyhook(new Keyhook(this))
     , timer_controller(new TimerController(this))
+    , clock_reader(new ClockReader(this))
 {
     keyhook->start();
 

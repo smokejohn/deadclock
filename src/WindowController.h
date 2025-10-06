@@ -6,6 +6,7 @@
 
 #include "Keyhook.h"
 #include "TimerController.h"
+#include "ClockReader.h"
 
 class WindowController : public QObject
 {
@@ -63,4 +64,5 @@ private:
 
     Keyhook* keyhook;
     TimerController* timer_controller;
+    ClockReader* clock_reader;
 };
