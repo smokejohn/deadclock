@@ -18,11 +18,13 @@ class WindowController : public QObject
 
 public:
     WindowController(QObject* parent = nullptr);
+    ~WindowController();
 
     Q_INVOKABLE void toggle_overlay_visible(bool visible);
     Q_INVOKABLE void toggle_overlay_raised(bool raised);
     Q_INVOKABLE void toggle_overlay_locked(bool lock);
     Q_INVOKABLE void toggle_keyhook_engaged(bool engaged);
+    Q_INVOKABLE void toggle_clock_sync(bool sync);
 
     Q_INVOKABLE QString get_key_name(int keycode);
 

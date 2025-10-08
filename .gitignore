@@ -1,5 +1,6 @@
 .cache/
 build/
+msysbuild/
 compile_commands.json
 
 # C++ objects and libs

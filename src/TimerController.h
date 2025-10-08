@@ -36,6 +36,9 @@ signals:
     void time_changed();
     void running_changed();
 
+public slots:
+    void update_time_external(int minutes, int seconds);
+
 private slots:
     void update_time();
 

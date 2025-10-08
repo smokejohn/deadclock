@@ -102,7 +102,7 @@ ApplicationWindow {
                     id: lead_time
                     from: 5
                     to: 30
-                    stepSize: 1
+                    stepSize: 5
                     value: 20
 
                     ToolTip.visible: hovered || pressed
@@ -177,6 +177,41 @@ ApplicationWindow {
             }
         }
 
+        GroupBox {
+            title: "Clock Sync"
+            Column {
+                spacing: 5
+                Switch {
+                    id: clock_sync_toggle
+                    text: "Automatic clock sync"
+                    onCheckedChanged: {
+                        window_controller.toggle_clock_sync(checked)
+                    }
+                }
+                Switch {
+                    id: clock_sync_show_capture_rect
+                    text: "Show capture region"
+                    onCheckedChanged: {
+                        const capture_rect = clock_reader.get_capture_region()
+                        capture_region_debug.x = capture_rect.x
+                        capture_region_debug.y = capture_rect.y
+                        capture_region_debug.width = capture_rect.width
+                        capture_region_debug.height = capture_rect.height
+                    }
+                }
+            }
+        }
+    }
+
+    Window {
+        id: capture_region_debug
+        visible: clock_sync_show_capture_rect.checked
+        color: Qt.rgba(0.3, 0.0, 0.0, 0.5)
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+        x: 0
+        y: 0
+        width: 100
+        height: 100
     }
 
     onClosing: {

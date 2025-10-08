@@ -17,6 +17,7 @@ WindowController::WindowController(QObject* parent)
     engine.rootContext()->setContextProperty("window_controller", this);
     engine.rootContext()->setContextProperty("keyhook", keyhook);
     engine.rootContext()->setContextProperty("timer_controller", timer_controller);
+    engine.rootContext()->setContextProperty("clock_reader", clock_reader);
 
 
     engine.load(QUrl(QStringLiteral("qrc:/ui/MainWindow.qml")));
@@ -26,6 +27,12 @@ WindowController::WindowController(QObject* parent)
     overlay_window = qobject_cast<QWindow*>(engine.rootObjects().at(1));
 
     toggle_keyhook_engaged(true);
+
+    connect(clock_reader, &ClockReader::time_read, timer_controller, &TimerController::update_time_external);
+}
+
+WindowController::~WindowController() {
+    qDebug() << "Destroying window_controller";
 }
 
 void WindowController::toggle_overlay_raised(bool raised)
@@ -60,6 +67,13 @@ void WindowController::toggle_keyhook_engaged(bool engaged) {
     }
 }
 
+void WindowController::toggle_clock_sync(bool sync) {
+    if (sync) {
+        clock_reader->start_reading();
+    } else {
+        clock_reader->stop_reading();
+    }
+}
 
 void WindowController::key_pressed(unsigned int key)
 {

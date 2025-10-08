@@ -4,7 +4,7 @@
 
 
 TimerController::TimerController(QObject* parent)
-    : QObject { parent }
+    : QObject(parent)
     , timer(new QTimer(this))
     , speech(new QTextToSpeech(this))
 {
@@ -69,6 +69,19 @@ void TimerController::update_time()
 {
     manage_timers();
     elapsed_seconds++;
+    emit time_changed();
+}
+
+void TimerController::update_time_external(int minutes, int seconds)
+{
+    qDebug() << "Handler for updating time externally via sync called";
+    qDebug() << minutes << ":" << seconds;
+    if(minutes == -1 || seconds == -1) {
+        return;
+    }
+
+    int input_time = minutes * 60 + seconds;
+    elapsed_seconds = input_time;
     emit time_changed();
 }
 
