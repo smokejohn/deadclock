@@ -30,6 +30,9 @@ The volume of the TTS feature can be adjusted.
 Configurable global hotkeys to start, stop and set the timer which mirrors the ingame clock
 without having to tab out of the game.
 
+### OCR (Optical Character Recognition)
+Reads and updates the in-game timer to update it's own internal timer via OCR from your screen
+
 ### Crossplattform
 Built with libraries that work on any OS this app should run on Windows, Linux and MacOS.
 Currently only builds for Windows are published and Linux builds will follow. 
@@ -42,7 +45,7 @@ your choice. Then simply click the deadclock executable to start the app.
 
 ## Building
 
-### Requirements
+### Requirements / Dependencies
 
 * CMake
 * Qt6 6.9.3
@@ -53,14 +56,41 @@ your choice. Then simply click the deadclock executable to start the app.
     * Quick
     * QuickControls2
     * TextToSpeech
+* Tesseract OCR
 
 ### Building on Windows
-The easiest way to build this project on window is to use the Qt6 WebInstaller to install the
-needed dependencies and the use QtCreator IDE to build the project.
-* [Qt6 WebInstaller](https://doc.qt.io/qt-6/get-and-install-qt.html)
-
-Alternatively you can use MSYS2 to build the project with the MINGW-64 toolchain
+Use MSYS2 to build the project with the MINGW-64 toolchain
 * [MSYS 2](https://www.msys2.org/)
+
+Once in the msys2 mingw64 shell install the needed dependencies:
+```
+# cmake
+pacman -S mingw-w64-x86_64-cmake
+# Qt6 Base, QML and components
+pacman -S mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-declarative mingw-w64-x86_64-qt6-speech
+# tesseract-ocr and language data
+pacman -S mingw-w64-x86_64-tesseract-ocr mingw-w64-x84_64-tesseract-data-eng
+```
+
+Since there is a bug in the mingw-w64-x86_64-leptonica pkgconfig file that gets
+installed as a dependency of tesseract-ocr we need to fix it by editing the .pc file
+```
+nano /mingw64/lib/pkgconfig/lept.pc
+```
+
+Edit the line that starts with `Requires.private:` and replace:
+* `PNG` with `libpng`
+* `JPEG` with `libjpeg`
+* `TIFF` with `libtiff-4`
+
+
+Then you can execute the msys2 build script (from the project root):
+```
+./scripts/build_msys2.sh
+```
+
+This builds a Release Build and places the finished and ready to share/deploy build in
+`./msysbuild/deploy/`
 
 ### Building on Linux
 After cloning the repository with git and installing the needed dependencies.
