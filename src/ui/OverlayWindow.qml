@@ -22,7 +22,7 @@ Window {
     property bool window_locked: false
 
     Connections {
-        target: window_controller
+        target: application
 
         function onOverlay_locked(locked) {
             window_locked = locked;

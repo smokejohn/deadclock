@@ -4,7 +4,7 @@
 #include <QUrl>
 #include <QDirIterator>
 
-#include "WindowController.h"
+#include "Application.h"
 
 int main(int argc, char* argv[])
 {
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
     app.setWindowIcon(QIcon(":/images/deadclock_icon.ico"));
 
-    WindowController* window_controller = new WindowController(&app);
+    Application* deadclock = new Application(&app);
 
     return app.exec();
 }

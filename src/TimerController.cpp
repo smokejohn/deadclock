@@ -2,26 +2,15 @@
 
 #include "TimerController.h"
 
-
-TimerController::TimerController(QObject* parent)
+TimerController::TimerController(SettingsManager* settings_manager, QObject* parent)
     : QObject(parent)
     , timer(new QTimer(this))
-    , speech(new QTextToSpeech(this))
+    , settings_manager(settings_manager)
 {
     connect(timer, &QTimer::timeout, this, &TimerController::update_time);
     timer->setInterval(1000);
 
-    auto voices = speech->availableVoices();
-
-    // qDebug() << "Available voices";
-    // for(const auto& voice : voices) {
-        // qDebug() << voice.name();
-    // }
-
-    if (voices.size() > 1) {
-        speech->setVoice(voices[0]);
-    }
-
+    enabled_events.set();
 }
 
 void TimerController::start() {
@@ -74,8 +63,6 @@ void TimerController::update_time()
 
 void TimerController::update_time_external(int minutes, int seconds)
 {
-    qDebug() << "Handler for updating time externally via sync called";
-    qDebug() << minutes << ":" << seconds;
     if(minutes == -1 || seconds == -1) {
         return;
     }
@@ -83,15 +70,6 @@ void TimerController::update_time_external(int minutes, int seconds)
     int input_time = minutes * 60 + seconds;
     elapsed_seconds = input_time;
     emit time_changed();
-}
-
-void TimerController::say_test() {
-    speech->say("test");
-}
-
-// QML Setters
-void TimerController::set_speech_volume(int volume) {
-    speech->setVolume(static_cast<double>(volume) / 100.0);
 }
 
 void TimerController::set_last_set_minutes(int minutes) {
@@ -102,61 +80,58 @@ void TimerController::set_last_set_seconds(int seconds) {
     last_set_seconds = seconds;
 }
 
-void TimerController::set_lead_time(int seconds) {
-    lead_time = seconds;
-}
-
 void TimerController::manage_timers()
 {
-    const int spawn_time_breakables {120};
-    const int spawn_time_small_camps {120};
-    const int spawn_time_runes {300};
-    const int spawn_time_medium_camps {360};
-    const int spawn_time_large_camps {480};
-    const int spawn_time_sinners {480};
-    const int spawn_time_mid_boss {600};
+    static const int spawn_time_breakables {120};
+    static const int spawn_time_small_camps {120};
+    static const int spawn_time_runes {300};
+    static const int spawn_time_medium_camps {360};
+    static const int spawn_time_large_camps {480};
+    static const int spawn_time_sinners {480};
+    static const int spawn_time_mid_boss {600};
     int spawn_time_urn {600};
+    const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
 
     // One time events
 
     // Small camps and breakables
-    if (elapsed_seconds == spawn_time_breakables - lead_time) {
-        speech->say("Small camps and breakables spawn in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::small_camps) && elapsed_seconds == spawn_time_breakables - lead_time) {
+        emit event_occured(EventType::small_camps);
     }
 
     // Medium camps
-    if (elapsed_seconds == spawn_time_medium_camps - lead_time) {
-        speech->say("Medium camps spawn in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::medium_camps) && elapsed_seconds == spawn_time_medium_camps - lead_time) {
+        emit event_occured(EventType::medium_camps);
     }
 
     // Large camps and Sinners Sacrifice
-    if (elapsed_seconds == spawn_time_large_camps - lead_time) {
-        speech->say("Sinners Sacrifice and large camps spawn in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::large_camps) && elapsed_seconds == spawn_time_large_camps - lead_time) {
+        emit event_occured(EventType::large_camps);
     }
 
     // Mid Boss and breakables in mid
-    if (elapsed_seconds ==  spawn_time_mid_boss - lead_time) {
-        speech->say("Mid Boss and breakables above it spawn in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::mid_boss) && elapsed_seconds ==  spawn_time_mid_boss - lead_time) {
+        emit event_occured(EventType::mid_boss);
     }
 
-
     // Repeating events
-    // rune spawns every 5 minutes after 10 minutes
+    // Urn spawns every 5 minutes after 10 minutes
     if (elapsed_seconds > 600) {
         spawn_time_urn = 300;
     }
 
     // Runes
-    // if (elapsed_seconds == spawn_time_runes * rune_spawn - lead_time) {
-    if (elapsed_seconds % spawn_time_runes == spawn_time_runes - lead_time) {
-        speech->say("Runes spawn in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::runes) && elapsed_seconds % spawn_time_runes == spawn_time_runes - lead_time) {
+        emit event_occured(EventType::runes);
     }
-
 
     // Urn
-    // if (elapsed_seconds == spawn_time_urn * urn_spawn - lead_time) {
-    if (elapsed_seconds % spawn_time_urn == spawn_time_urn - lead_time) {
-        speech->say("Urn spawns in " + QString::number(lead_time) + " seconds");
+    if (event_enabled(EventType::urn) && elapsed_seconds % spawn_time_urn == spawn_time_urn - lead_time) {
+        emit event_occured(EventType::urn);
     }
+}
 
+bool TimerController::event_enabled(EventType type)
+{
+    return enabled_events.test(static_cast<std::size_t>(type));
 }

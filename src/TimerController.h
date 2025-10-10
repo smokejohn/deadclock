@@ -2,7 +2,12 @@
 
 #include <QObject>
 #include <QTimer>
-#include <QTextToSpeech>
+#include <QPointer>
+
+#include <bitset>
+
+#include "data/Common.h"
+#include "SettingsManager.h"
 
 class TimerController : public QObject
 {
@@ -11,7 +16,7 @@ class TimerController : public QObject
     Q_PROPERTY(bool is_running READ is_running NOTIFY running_changed)
 
 public:
-    explicit TimerController(QObject* parent = nullptr);
+    explicit TimerController(SettingsManager* settings_manager, QObject* parent = nullptr);
 
     void set_time();
 
@@ -21,20 +26,15 @@ public:
     Q_INVOKABLE void set_time(int minutes, int seconds);
     Q_INVOKABLE bool is_running();
 
-    // TODO: move speech code out of this class
-    Q_INVOKABLE void set_speech_volume(int volume);
-    Q_INVOKABLE void say_test();
-
     Q_INVOKABLE void set_last_set_minutes(int minutes);
     Q_INVOKABLE void set_last_set_seconds(int seconds);
-
-    Q_INVOKABLE void set_lead_time(int seconds);
 
     QString display_time() const;
 
 signals:
     void time_changed();
     void running_changed();
+    void event_occured(EventType type);
 
 public slots:
     void update_time_external(int minutes, int seconds);
@@ -47,10 +47,11 @@ private:
 
     int last_set_minutes {0};
     int last_set_seconds {20};
-    int lead_time {20};
+
+    bool event_enabled(EventType type);
 
     QTimer* timer;
     unsigned int elapsed_seconds {0};
-
-    QTextToSpeech* speech;
+    QPointer<SettingsManager> settings_manager {nullptr};
+    std::bitset<6> enabled_events;
 };

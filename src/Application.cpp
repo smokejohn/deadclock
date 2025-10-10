@@ -1,4 +1,4 @@
-#include "WindowController.h"
+#include "Application.h"
 
 #include <QQmlContext>
 #include <QIcon>
@@ -6,19 +6,20 @@
 #include "data/KeyMap.h"
 #include <tesseract/baseapi.h>
 
-WindowController::WindowController(QObject* parent)
+Application::Application(QObject* parent)
     : QObject(parent)
+    , settings_manager(new SettingsManager(this))
     , keyhook(new Keyhook(this))
-    , timer_controller(new TimerController(this))
     , clock_reader(new ClockReader(this))
+    , timer_controller(new TimerController(settings_manager, this))
+    , tts_manager(new TTSManager(settings_manager, this))
 {
     keyhook->start();
 
-    engine.rootContext()->setContextProperty("window_controller", this);
-    engine.rootContext()->setContextProperty("keyhook", keyhook);
+    engine.rootContext()->setContextProperty("application", this);
     engine.rootContext()->setContextProperty("timer_controller", timer_controller);
-    engine.rootContext()->setContextProperty("clock_reader", clock_reader);
-
+    engine.rootContext()->setContextProperty("settings", settings_manager);
+    engine.rootContext()->setContextProperty("tts", tts_manager);
 
     engine.load(QUrl(QStringLiteral("qrc:/ui/MainWindow.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/ui/OverlayWindow.qml")));
@@ -29,19 +30,15 @@ WindowController::WindowController(QObject* parent)
     toggle_keyhook_engaged(true);
 
     connect(clock_reader, &ClockReader::time_read, timer_controller, &TimerController::update_time_external);
+
+    connect(timer_controller, &TimerController::event_occured, tts_manager, TTSManager::handle_event);
 }
 
-WindowController::~WindowController() {
+Application::~Application() {
     qDebug() << "Destroying window_controller";
 }
 
-void WindowController::toggle_overlay_raised(bool raised)
-{
-    overlay_window->setFlag(Qt::WindowStaysOnTopHint, raised);
-    overlay_window->show();
-}
-
-void WindowController::toggle_overlay_locked(bool lock)
+void Application::toggle_overlay_locked(bool lock)
 {
     overlay_window->setFlag(Qt::WindowDoesNotAcceptFocus, lock);
     overlay_window->setFlag(Qt::WindowTransparentForInput, lock);
@@ -50,7 +47,7 @@ void WindowController::toggle_overlay_locked(bool lock)
     emit overlay_locked(lock);
 }
 
-void WindowController::toggle_overlay_visible(bool visible)
+void Application::toggle_overlay_visible(bool visible)
 {
     if(visible) {
         overlay_window->show();
@@ -59,15 +56,15 @@ void WindowController::toggle_overlay_visible(bool visible)
     }
 }
 
-void WindowController::toggle_keyhook_engaged(bool engaged) {
+void Application::toggle_keyhook_engaged(bool engaged) {
     if(engaged) {
-        connect(keyhook, &Keyhook::key_pressed, this, &WindowController::key_pressed, Qt::QueuedConnection);
+        connect(keyhook, &Keyhook::key_pressed, this, &Application::key_pressed, Qt::QueuedConnection);
     } else {
-        disconnect(keyhook, &Keyhook::key_pressed, this, &WindowController::key_pressed);
+        disconnect(keyhook, &Keyhook::key_pressed, this, &Application::key_pressed);
     }
 }
 
-void WindowController::toggle_clock_sync(bool sync) {
+void Application::toggle_clock_sync(bool sync) {
     if (sync) {
         clock_reader->start_reading();
     } else {
@@ -75,7 +72,7 @@ void WindowController::toggle_clock_sync(bool sync) {
     }
 }
 
-void WindowController::key_pressed(unsigned int key)
+void Application::key_pressed(unsigned int key)
 {
     if(keybinding_pause_key) {
         pause_key = key;
@@ -101,24 +98,24 @@ void WindowController::key_pressed(unsigned int key)
     }
 }
 
-void WindowController::key_released(unsigned int key)
+void Application::key_released(unsigned int key)
 {
     qDebug("Key Released");
 }
 
-void WindowController::toggle_pause_keybind_active() {
+void Application::toggle_pause_keybind_active() {
     set_pause_keybind_active(!keybinding_pause_key);
 }
 
-bool WindowController::is_pause_keybind_active() {
+bool Application::is_pause_keybind_active() {
     return keybinding_pause_key;
 }
 
-int WindowController::get_pause_key() {
+int Application::get_pause_key() {
     return pause_key;
 }
 
-void WindowController::set_pause_keybind_active(bool active) {
+void Application::set_pause_keybind_active(bool active) {
     if(keybinding_pause_key == active)
         return;
     keybinding_pause_key = active;
@@ -126,25 +123,25 @@ void WindowController::set_pause_keybind_active(bool active) {
 }
 
 
-void WindowController::toggle_set_keybind_active() {
+void Application::toggle_set_keybind_active() {
     set_set_keybind_active(!keybinding_set_key);
 }
 
-bool WindowController::is_set_keybind_active() {
+bool Application::is_set_keybind_active() {
     return keybinding_set_key;
 }
 
-int WindowController::get_set_key() {
+int Application::get_set_key() {
     return set_key;
 }
 
-void WindowController::set_set_keybind_active(bool active) {
+void Application::set_set_keybind_active(bool active) {
     if(keybinding_set_key == active)
         return;
     keybinding_set_key = active;
     emit set_keybind_active_changed();
 }
 
-QString WindowController::get_key_name(int keycode) {
+QString Application::get_key_name(int keycode) {
     return QString::fromStdString(KeyMap::get_key(keycode));
 }

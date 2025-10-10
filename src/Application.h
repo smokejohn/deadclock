@@ -7,8 +7,10 @@
 #include "Keyhook.h"
 #include "TimerController.h"
 #include "ClockReader.h"
+#include "SettingsManager.h"
+#include "TTSManager.h"
 
-class WindowController : public QObject
+class Application : public QObject
 {
     Q_OBJECT
     Q_PROPERTY (bool pause_keybind_active READ is_pause_keybind_active WRITE set_pause_keybind_active NOTIFY pause_keybind_active_changed)
@@ -17,11 +19,10 @@ class WindowController : public QObject
     Q_PROPERTY (int set_key READ get_set_key NOTIFY set_keybind_changed)
 
 public:
-    WindowController(QObject* parent = nullptr);
-    ~WindowController();
+    Application(QObject* parent = nullptr);
+    ~Application();
 
     Q_INVOKABLE void toggle_overlay_visible(bool visible);
-    Q_INVOKABLE void toggle_overlay_raised(bool raised);
     Q_INVOKABLE void toggle_overlay_locked(bool lock);
     Q_INVOKABLE void toggle_keyhook_engaged(bool engaged);
     Q_INVOKABLE void toggle_clock_sync(bool sync);
@@ -64,7 +65,9 @@ private:
     QWindow* main_window;
     QWindow* overlay_window;
 
+    SettingsManager* settings_manager;
     Keyhook* keyhook;
-    TimerController* timer_controller;
     ClockReader* clock_reader;
+    TimerController* timer_controller;
+    TTSManager* tts_manager;
 };

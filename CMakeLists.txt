@@ -17,7 +17,6 @@ find_package(Qt6 REQUIRED COMPONENTS
     QuickControls2
     TextToSpeech
 )
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(TESSERACT REQUIRED tesseract)
 pkg_check_modules(LEPTONICA REQUIRED lept)
@@ -26,15 +25,15 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 set(SOURCES
     src/main.cpp
-    src/WindowController.cpp
+    src/Application.cpp
     src/Keyhook.cpp
     src/ClockReader.cpp
+    src/SettingsManager.cpp
+    src/TimerController.cpp
+    src/TTSManager.cpp
 )
 
-qt_add_executable(deadclock ${SOURCES}
-    src/PausableTimer.h src/PausableTimer.cpp
-    src/TimerController.h src/TimerController.cpp
-)
+qt_add_executable(deadclock ${SOURCES})
 
 qt_add_qml_module(deadclock
     URI Application
@@ -86,7 +85,6 @@ target_link_libraries(deadclock PRIVATE
     tesseract
     leptonica
 )
-
 file(COPY "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
      DESTINATION "${CMAKE_BINARY_DIR}"
 )
@@ -102,7 +100,6 @@ qt_generate_deploy_qml_app_script(
     OUTPUT_SCRIPT deploy_script
 )
 install(SCRIPT ${deploy_script})
-
 
 install(FILES "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
         DESTINATION "${CMAKE_INSTALL_BINDIR}"

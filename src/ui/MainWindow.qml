@@ -14,10 +14,17 @@ ApplicationWindow {
     minimumHeight: root.implicitHeight + 40
     maximumWidth: root.implicitWidth + 40
     maximumHeight: root.implicitHeight + 40
-    title: "DeadClock"
+    title: "Deadclock"
 
     Material.theme: Material.Dark
     Material.accent: "#9b7858"
+
+    Component.onCompleted: {
+        // Load Settings from disk
+        speech_volume_slider.value = settings.load_setting("speech/volume")
+        speech_voice_selection.currentIndex = settings.load_setting("speech/voice")
+        lead_time_slider.value = settings.load_setting("timer/lead_time")
+    }
 
     ColumnLayout {
         id: root
@@ -72,25 +79,37 @@ ApplicationWindow {
             title: "Settings"
 
             Column {
-                spacing: 5
+                spacing: 10
                 Label {
-                    text: "Speech volume"
+                    text: "Speech Voice"
                 }
-
+                ComboBox {
+                    id: speech_voice_selection
+                    model: tts.get_available_voices()
+                    width: parent.width
+                    onActivated: {
+                        settings.save_setting("speech/voice", currentIndex)
+                        tts.say(currentText);
+                    }
+                }
+                Label {
+                    text: "Speech Volume"
+                }
                 Slider {
-                    id: speech_volume
+                    id: speech_volume_slider
                     from: 0
                     to: 100
                     stepSize: 1
                     value: 50
+                    width: parent.width
 
                     ToolTip.visible: hovered || pressed
                     ToolTip.text: value.toFixed(0)
 
                     onPressedChanged: {
                         if (!pressed) {
-                            timer_controller.set_speech_volume(value);
-                            timer_controller.say_test();
+                            settings.save_setting("speech/volume", value)
+                            tts.say_test();
                         }
                     }
                 }
@@ -99,18 +118,19 @@ ApplicationWindow {
                     ToolTip.text: "Set how many seconds in advance you’ll be alerted before the event begins."
                 }
                 Slider {
-                    id: lead_time
+                    id: lead_time_slider
                     from: 5
                     to: 30
                     stepSize: 5
                     value: 20
+                    width: parent.width
 
                     ToolTip.visible: hovered || pressed
                     ToolTip.text: value.toFixed(0)
 
                     onPressedChanged: {
                         if (!pressed) {
-                            timer_controller.set_lead_time(value);
+                            settings.save_setting("timer/lead_time", value)
                         }
                     }
                 }
@@ -122,34 +142,34 @@ ApplicationWindow {
                 Button {
                     id: pause_keybind_button
                     text: {
-                        if (window_controller.pause_keybind_active) {
-                            return "Setting key: " + window_controller.get_key_name(window_controller.pause_key)
+                        if (application.pause_keybind_active) {
+                            return "Setting key: " + application.get_key_name(application.pause_key)
                         } else {
-                            return "Start/Stop Timer: " + window_controller.get_key_name(window_controller.pause_key)
+                            return "Start/Stop Timer: " + application.get_key_name(application.pause_key)
                         }
                     }
-                    highlighted: window_controller.pause_keybind_active
-                    enabled: !window_controller.set_keybind_active
+                    highlighted: application.pause_keybind_active
+                    enabled: !application.set_keybind_active
                     ToolTip.visible: hovered
                     ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to confirm/cancel"
                     ToolTip.delay: 1000
-                    onClicked: window_controller.toggle_pause_keybind_active()
+                    onClicked: application.toggle_pause_keybind_active()
                 }
                 Button {
                     id: set_keybind_button
                     text: {
-                        if (window_controller.set_keybind_active) {
-                            return "Setting key: " + window_controller.get_key_name(window_controller.set_key)
+                        if (application.set_keybind_active) {
+                            return "Setting key: " + application.get_key_name(application.set_key)
                         } else {
-                            return "Set Timer: " + window_controller.get_key_name(window_controller.set_key)
+                            return "Set Timer: " + application.get_key_name(application.set_key)
                         }
                     }
-                    highlighted: window_controller.set_keybind_active
-                    enabled: !window_controller.pause_keybind_active
+                    highlighted: application.set_keybind_active
+                    enabled: !application.pause_keybind_active
                     ToolTip.visible: hovered
                     ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to confirm/cancel"
                     ToolTip.delay: 1000
-                    onClicked: window_controller.toggle_set_keybind_active()
+                    onClicked: application.toggle_set_keybind_active()
                 }
             }
         }
@@ -162,7 +182,7 @@ ApplicationWindow {
                     text: "Show Overlay"
 
                     onCheckedChanged: {
-                        window_controller.toggle_overlay_visible(checked)
+                        application.toggle_overlay_visible(checked)
                     }
                 }
                 Switch {
@@ -171,7 +191,7 @@ ApplicationWindow {
                     enabled: overlay_toggle_visible.checked
 
                     onCheckedChanged: {
-                        window_controller.toggle_overlay_locked(checked)
+                        application.toggle_overlay_locked(checked)
                     }
                 }
             }
@@ -185,7 +205,7 @@ ApplicationWindow {
                     id: clock_sync_toggle
                     text: "Automatic clock sync"
                     onCheckedChanged: {
-                        window_controller.toggle_clock_sync(checked)
+                        application.toggle_clock_sync(checked)
                     }
                 }
                 Switch {
