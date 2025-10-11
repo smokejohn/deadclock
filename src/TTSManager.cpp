@@ -6,7 +6,7 @@ TTSManager::TTSManager(SettingsManager* settings_manager, QObject* parent)
     , settings_manager(settings_manager)
 {
     speech->setVolume(0.5);
-    connect(settings_manager, &SettingsManager::settings_changed, this, TTSManager::update_settings);
+    connect(settings_manager, &SettingsManager::settings_changed, this, &TTSManager::update_settings);
 
     update_settings();
 }

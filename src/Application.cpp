@@ -3,7 +3,6 @@
 #include <QQmlContext>
 #include <QIcon>
 
-#include "data/KeyMap.h"
 #include <tesseract/baseapi.h>
 
 Application::Application(QObject* parent)
@@ -28,7 +27,7 @@ Application::Application(QObject* parent)
     overlay_window = qobject_cast<QWindow*>(engine.rootObjects().at(1));
 
     connect(clock_reader, &ClockReader::time_read, timer_controller, &TimerController::update_time_external);
-    connect(timer_controller, &TimerController::event_occured, tts_manager, TTSManager::handle_event);
+    connect(timer_controller, &TimerController::event_occured, tts_manager, &TTSManager::handle_event);
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
 }
 
