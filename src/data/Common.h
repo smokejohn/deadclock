@@ -1,6 +1,7 @@
 #pragma once
 
-enum class EventType {
+enum class EventType
+{
     small_camps,
     medium_camps,
     large_camps,
@@ -9,7 +10,8 @@ enum class EventType {
     urn
 };
 
-enum class KeyBind {
+enum class KeyBind
+{
     pause,
     sync,
     set,

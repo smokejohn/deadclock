@@ -15,7 +15,7 @@ InputManager::InputManager(SettingsManager* settings_manager, QObject* parent)
 
 void InputManager::key_pressed(unsigned int key)
 {
-    if(keybinding_pause_key) {
+    if (keybinding_pause_key) {
         pause_key = key;
         settings_manager->save_setting("input/pause_key", pause_key);
         emit pause_keybind_changed();
@@ -23,7 +23,7 @@ void InputManager::key_pressed(unsigned int key)
         return;
     }
 
-    if(keybinding_set_key) {
+    if (keybinding_set_key) {
         set_key = key;
         settings_manager->save_setting("input/set_key", set_key);
         emit set_keybind_changed();
@@ -39,20 +39,24 @@ void InputManager::key_pressed(unsigned int key)
     }
 }
 
-void InputManager::toggle_pause_keybind_active() {
+void InputManager::toggle_pause_keybind_active()
+{
     set_pause_keybind_active(!keybinding_pause_key);
 }
 
-bool InputManager::is_pause_keybind_active() {
+bool InputManager::is_pause_keybind_active()
+{
     return keybinding_pause_key;
 }
 
-int InputManager::get_pause_key() {
+int InputManager::get_pause_key()
+{
     return pause_key;
 }
 
-void InputManager::set_pause_keybind_active(bool active) {
-    if(keybinding_pause_key == active) {
+void InputManager::set_pause_keybind_active(bool active)
+{
+    if (keybinding_pause_key == active) {
         return;
     }
     keybinding_pause_key = active;
@@ -60,27 +64,32 @@ void InputManager::set_pause_keybind_active(bool active) {
 }
 
 
-void InputManager::toggle_set_keybind_active() {
+void InputManager::toggle_set_keybind_active()
+{
     set_set_keybind_active(!keybinding_set_key);
 }
 
-bool InputManager::is_set_keybind_active() {
+bool InputManager::is_set_keybind_active()
+{
     return keybinding_set_key;
 }
 
-int InputManager::get_set_key() {
+int InputManager::get_set_key()
+{
     return set_key;
 }
 
-void InputManager::set_set_keybind_active(bool active) {
-    if(keybinding_set_key == active) {
+void InputManager::set_set_keybind_active(bool active)
+{
+    if (keybinding_set_key == active) {
         return;
     }
     keybinding_set_key = active;
     emit set_keybind_active_changed();
 }
 
-QString InputManager::get_key_name(int keycode) {
+QString InputManager::get_key_name(int keycode)
+{
     return QString::fromStdString(KeyMap::get_key(keycode));
 }
 

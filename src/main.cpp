@@ -1,8 +1,8 @@
+#include <QDirIterator>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QUrl>
-#include <QDirIterator>
 
 #include "Application.h"
 

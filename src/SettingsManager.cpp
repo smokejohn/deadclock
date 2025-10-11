@@ -4,7 +4,8 @@
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent)
     , settings(new QSettings(QSettings::IniFormat, QSettings::UserScope, "FireAndForget", "Deadclock", this))
-{}
+{
+}
 
 SettingsManager::~SettingsManager()
 {

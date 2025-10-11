@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 #include <QTextToSpeech>
-#include <QPointer>
 
-#include "data/Common.h"
 #include "SettingsManager.h"
+#include "data/Common.h"
 
 class TTSManager : public QObject
 {
@@ -29,5 +29,5 @@ private slots:
 
 private:
     QTextToSpeech* speech;
-    QPointer<SettingsManager> settings_manager {nullptr};
+    QPointer<SettingsManager> settings_manager { nullptr };
 };

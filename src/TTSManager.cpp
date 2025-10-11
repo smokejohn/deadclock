@@ -43,7 +43,7 @@ void TTSManager::say(const QString& text)
 void TTSManager::handle_event(EventType type)
 {
     const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
-    switch(type) {
+    switch (type) {
         case EventType::small_camps:
             speech->say("Small camps and breakables spawn in " + QString::number(lead_time) + " seconds");
             break;

@@ -51,7 +51,7 @@ bool Keyhook::logger_proc(unsigned int level, const char* format, ...)
 
 void Keyhook::dispatch_wrapper(_uiohook_event* const event)
 {
-    if(instance) {
+    if (instance) {
         instance->dispatch_proc(event);
     }
 }

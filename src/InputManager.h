@@ -10,10 +10,12 @@
 class InputManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY (bool pause_keybind_active READ is_pause_keybind_active WRITE set_pause_keybind_active NOTIFY pause_keybind_active_changed)
-    Q_PROPERTY (int pause_key READ get_pause_key NOTIFY pause_keybind_changed)
-    Q_PROPERTY (bool set_keybind_active READ is_set_keybind_active WRITE set_set_keybind_active NOTIFY set_keybind_active_changed)
-    Q_PROPERTY (int set_key READ get_set_key NOTIFY set_keybind_changed)
+    Q_PROPERTY(bool pause_keybind_active READ is_pause_keybind_active WRITE set_pause_keybind_active NOTIFY
+                   pause_keybind_active_changed)
+    Q_PROPERTY(int pause_key READ get_pause_key NOTIFY pause_keybind_changed)
+    Q_PROPERTY(bool set_keybind_active READ is_set_keybind_active WRITE set_set_keybind_active NOTIFY
+                   set_keybind_active_changed)
+    Q_PROPERTY(int set_key READ get_set_key NOTIFY set_keybind_changed)
 
 public:
     explicit InputManager(SettingsManager* settings_manager, QObject* parent = nullptr);
@@ -48,10 +50,9 @@ private:
     void mouse_released(unsigned int button);
 
     Keyhook* keyhook;
-    QPointer<SettingsManager> settings_manager {nullptr};
+    QPointer<SettingsManager> settings_manager { nullptr };
     int pause_key {};
-    bool keybinding_pause_key {false};
+    bool keybinding_pause_key { false };
     int set_key {};
-    bool keybinding_set_key {false};
-
+    bool keybinding_set_key { false };
 };

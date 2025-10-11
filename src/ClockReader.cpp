@@ -1,10 +1,10 @@
 #include "ClockReader.h"
 
-#include <QScreen>
-#include <QPixmap>
 #include <QBuffer>
 #include <QIODevice>
+#include <QPixmap>
 #include <QRegularExpression>
+#include <QScreen>
 #include <QTimer>
 
 
@@ -12,9 +12,9 @@
 // These values are percentages of the current screen size
 // for positioning the capture area for ocr "independent" of screen resolution
 // TODO: read these values from json so if deadlock ui changes we can easily adapt
-constexpr double X_POS_PERCENTAGE {0.4805};
-constexpr double WIDTH_PERCENTAGE {0.039};
-constexpr double HEIGHT_PERCENTAGE {0.0174};
+constexpr double X_POS_PERCENTAGE { 0.4805 };
+constexpr double WIDTH_PERCENTAGE { 0.039 };
+constexpr double HEIGHT_PERCENTAGE { 0.0174 };
 
 static const QRegularExpression clock_regex(R"((\d{1,2}):(\d{1,2}))");
 
@@ -32,7 +32,7 @@ ClockReader::ClockReader(QObject* parent)
     set_capture_region(x_pos, 0, width, height);
 
 
-    if(ocr_engine->Init("./", "eng"/*, tesseract::OEM_LSTM_ONLY*/)) {
+    if (ocr_engine->Init("./", "eng" /*, tesseract::OEM_LSTM_ONLY*/)) {
         qDebug() << "Could not initialize tesseract";
         ocr_engine.reset();
         return;
@@ -46,27 +46,32 @@ ClockReader::ClockReader(QObject* parent)
     read_timer->setInterval(5000);
 }
 
-ClockReader::~ClockReader() {
-    if(ocr_engine) {
+ClockReader::~ClockReader()
+{
+    if (ocr_engine) {
         ocr_engine->End();
     }
 }
 
-void ClockReader::start_reading() {
+void ClockReader::start_reading()
+{
     read_timer->start();
 }
 
-void ClockReader::stop_reading() {
+void ClockReader::stop_reading()
+{
     read_timer->stop();
 }
 
-void ClockReader::read_clock(){
+void ClockReader::read_clock()
+{
     auto ocr_input = detect_digits();
     auto [minutes, seconds] = parse_text_to_time(ocr_input);
     emit time_read(minutes, seconds);
 }
 
-QString ClockReader::detect_digits() {
+QString ClockReader::detect_digits()
+{
     if (!ocr_engine) {
         qDebug() << "OCR engine not initialized";
         return "";
@@ -90,35 +95,40 @@ QString ClockReader::detect_digits() {
     return detected_text;
 }
 
-Pix* ClockReader::qimage_to_pix(const QImage& image) {
+Pix* ClockReader::qimage_to_pix(const QImage& image)
+{
     QByteArray data;
     QBuffer buffer(&data);
     buffer.open(QIODevice::WriteOnly);
     image.save(&buffer, "BMP");
     // const std::size_t count = data.size();
-    std::vector<unsigned char> hex (data.size());
+    std::vector<unsigned char> hex(data.size());
     std::memcpy(hex.data(), data.constData(), data.size());
     return pixReadMemBmp(hex.data(), data.size());
 }
 
-void ClockReader::capture_region() {
+void ClockReader::capture_region()
+{
     QScreen* screen = QGuiApplication::primaryScreen();
 
-    if(!screen) {
+    if (!screen) {
         qDebug() << "Cannot get screen";
         return;
     }
 
     qDebug() << "Capturing region: " << capture_rect;
-    current_capture = screen->grabWindow(0, capture_rect.left(), capture_rect.top(), capture_rect.width(), capture_rect.height());
+    current_capture =
+        screen->grabWindow(0, capture_rect.left(), capture_rect.top(), capture_rect.width(), capture_rect.height());
 }
 
-void ClockReader::set_capture_region(int x, int y, int width, int height) {
+void ClockReader::set_capture_region(int x, int y, int width, int height)
+{
     capture_rect.setRect(x, y, width, height);
     qDebug() << "Capture region changed: " << capture_rect;
 }
 
-QVariantMap ClockReader::get_capture_region() {
+QVariantMap ClockReader::get_capture_region()
+{
     QVariantMap rect_extents;
     rect_extents["x"] = capture_rect.left();
     rect_extents["y"] = capture_rect.top();
@@ -127,11 +137,13 @@ QVariantMap ClockReader::get_capture_region() {
     return rect_extents;
 }
 
-void ClockReader::save_to_disk(const QString& path) {
+void ClockReader::save_to_disk(const QString& path)
+{
     current_capture.save(path);
 }
 
-int ClockReader::parse_text_to_seconds(const QString& ocr_input) {
+int ClockReader::parse_text_to_seconds(const QString& ocr_input)
+{
     if (ocr_input.isEmpty()) {
         qDebug() << "ocr input is empty";
         return 0;
@@ -148,7 +160,8 @@ int ClockReader::parse_text_to_seconds(const QString& ocr_input) {
     return 0;
 }
 
-QPair<int, int> ClockReader::parse_text_to_time(const QString& ocr_input) {
+QPair<int, int> ClockReader::parse_text_to_time(const QString& ocr_input)
+{
     if (ocr_input.isEmpty()) {
         qDebug() << "ocr input is empty";
         return qMakePair(-1, -1);

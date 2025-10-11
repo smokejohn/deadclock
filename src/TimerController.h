@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QObject>
-#include <QTimer>
 #include <QPointer>
+#include <QTimer>
 
 #include <bitset>
 
-#include "data/Common.h"
 #include "SettingsManager.h"
+#include "data/Common.h"
 
 class TimerController : public QObject
 {
@@ -45,13 +45,13 @@ private slots:
 private:
     void manage_timers();
 
-    int last_set_minutes {0};
-    int last_set_seconds {20};
+    int last_set_minutes { 0 };
+    int last_set_seconds { 20 };
 
     bool event_enabled(EventType type);
 
     QTimer* timer;
-    unsigned int elapsed_seconds {0};
-    QPointer<SettingsManager> settings_manager {nullptr};
+    unsigned int elapsed_seconds { 0 };
+    QPointer<SettingsManager> settings_manager { nullptr };
     std::bitset<6> enabled_events;
 };

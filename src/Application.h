@@ -4,11 +4,11 @@
 #include <QQmlApplicationEngine>
 #include <QQuickView>
 
-#include "TimerController.h"
 #include "ClockReader.h"
+#include "InputManager.h"
 #include "SettingsManager.h"
 #include "TTSManager.h"
-#include "InputManager.h"
+#include "TimerController.h"
 
 #include "data/Common.h"
 

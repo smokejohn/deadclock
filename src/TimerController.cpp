@@ -13,17 +13,20 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
     enabled_events.set();
 }
 
-void TimerController::start() {
+void TimerController::start()
+{
     timer->start();
     emit running_changed();
 }
 
-void TimerController::pause() {
+void TimerController::pause()
+{
     timer->stop();
     emit running_changed();
 }
 
-void TimerController::reset() {
+void TimerController::reset()
+{
     timer->stop();
     emit running_changed();
     elapsed_seconds = 0;
@@ -31,27 +34,29 @@ void TimerController::reset() {
     emit time_changed();
 }
 
-bool TimerController::is_running() {
+bool TimerController::is_running()
+{
     return timer->isActive();
 }
 
-void TimerController::set_time() {
+void TimerController::set_time()
+{
     set_time(last_set_minutes, last_set_seconds);
 }
 
-void TimerController::set_time(int minutes, int seconds) {
+void TimerController::set_time(int minutes, int seconds)
+{
     last_set_minutes = minutes;
     last_set_seconds = seconds;
     elapsed_seconds = minutes * 60 + seconds;
     emit time_changed();
 }
 
-QString TimerController::display_time() const {
+QString TimerController::display_time() const
+{
     unsigned int minutes = elapsed_seconds / 60;
     unsigned int seconds = elapsed_seconds % 60;
-    return QString("%1:%2")
-        .arg(minutes, 2, 10, QChar('0'))
-        .arg(seconds, 2, 10, QChar('0'));
+    return QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
 }
 
 void TimerController::update_time()
@@ -63,7 +68,7 @@ void TimerController::update_time()
 
 void TimerController::update_time_external(int minutes, int seconds)
 {
-    if(minutes == -1 || seconds == -1) {
+    if (minutes == -1 || seconds == -1) {
         return;
     }
 
@@ -72,24 +77,26 @@ void TimerController::update_time_external(int minutes, int seconds)
     emit time_changed();
 }
 
-void TimerController::set_last_set_minutes(int minutes) {
+void TimerController::set_last_set_minutes(int minutes)
+{
     last_set_minutes = minutes;
 }
 
-void TimerController::set_last_set_seconds(int seconds) {
+void TimerController::set_last_set_seconds(int seconds)
+{
     last_set_seconds = seconds;
 }
 
 void TimerController::manage_timers()
 {
-    static const int spawn_time_breakables {120};
-    static const int spawn_time_small_camps {120};
-    static const int spawn_time_runes {300};
-    static const int spawn_time_medium_camps {360};
-    static const int spawn_time_large_camps {480};
-    static const int spawn_time_sinners {480};
-    static const int spawn_time_mid_boss {600};
-    int spawn_time_urn {600};
+    static const int spawn_time_breakables { 120 };
+    static const int spawn_time_small_camps { 120 };
+    static const int spawn_time_runes { 300 };
+    static const int spawn_time_medium_camps { 360 };
+    static const int spawn_time_large_camps { 480 };
+    static const int spawn_time_sinners { 480 };
+    static const int spawn_time_mid_boss { 600 };
+    int spawn_time_urn { 600 };
     const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
 
     // One time events
@@ -110,7 +117,7 @@ void TimerController::manage_timers()
     }
 
     // Mid Boss and breakables in mid
-    if (event_enabled(EventType::mid_boss) && elapsed_seconds ==  spawn_time_mid_boss - lead_time) {
+    if (event_enabled(EventType::mid_boss) && elapsed_seconds == spawn_time_mid_boss - lead_time) {
         emit event_occured(EventType::mid_boss);
     }
 

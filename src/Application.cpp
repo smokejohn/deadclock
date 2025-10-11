@@ -1,7 +1,7 @@
 #include "Application.h"
 
-#include <QQmlContext>
 #include <QIcon>
+#include <QQmlContext>
 
 #include <tesseract/baseapi.h>
 
@@ -31,7 +31,9 @@ Application::Application(QObject* parent)
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
 }
 
-Application::~Application() { }
+Application::~Application()
+{
+}
 
 void Application::toggle_overlay_locked(bool lock)
 {
@@ -44,14 +46,15 @@ void Application::toggle_overlay_locked(bool lock)
 
 void Application::toggle_overlay_visible(bool visible)
 {
-    if(visible) {
+    if (visible) {
         overlay_window->show();
     } else {
         overlay_window->hide();
     }
 }
 
-void Application::toggle_clock_sync(bool sync) {
+void Application::toggle_clock_sync(bool sync)
+{
     if (sync) {
         clock_reader->start_reading();
     } else {
@@ -59,7 +62,8 @@ void Application::toggle_clock_sync(bool sync) {
     }
 }
 
-void Application::handle_keybind_pressed(KeyBind keybind) {
+void Application::handle_keybind_pressed(KeyBind keybind)
+{
     if (keybind == KeyBind::pause) {
         if (timer_controller->is_running()) {
             timer_controller->pause();

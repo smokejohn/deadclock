@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QRect>
 #include <QPixmap>
+#include <QRect>
 #include <QString>
 #include <QVariantMap>
 
