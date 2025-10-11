@@ -39,10 +39,8 @@ QVariant SettingsManager::load_setting(const QString& key)
 
 void SettingsManager::set_to_defaults()
 {
-    settings->setValue("speech/volume", 50);
-    settings->setValue("speech/voice", 0);
-
-    settings->setValue("timer/lead_time", 20);
-
+    for (const auto& [key, value] : defaults) {
+        settings->setValue(key, value);
+    }
     emit settings_changed();
 }

@@ -8,3 +8,10 @@ enum class EventType {
     runes,
     urn
 };
+
+enum class KeyBind {
+    pause,
+    sync,
+    set,
+    timestamp
+};

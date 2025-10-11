@@ -6,7 +6,6 @@
 
 class Keyhook : public QThread
 {
-
     Q_OBJECT
 
 public:

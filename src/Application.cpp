@@ -9,17 +9,17 @@
 Application::Application(QObject* parent)
     : QObject(parent)
     , settings_manager(new SettingsManager(this))
-    , keyhook(new Keyhook(this))
     , clock_reader(new ClockReader(this))
     , timer_controller(new TimerController(settings_manager, this))
     , tts_manager(new TTSManager(settings_manager, this))
+    , input_manager(new InputManager(settings_manager, this))
 {
-    keyhook->start();
 
     engine.rootContext()->setContextProperty("application", this);
     engine.rootContext()->setContextProperty("timer_controller", timer_controller);
     engine.rootContext()->setContextProperty("settings", settings_manager);
     engine.rootContext()->setContextProperty("tts", tts_manager);
+    engine.rootContext()->setContextProperty("input", input_manager);
 
     engine.load(QUrl(QStringLiteral("qrc:/ui/MainWindow.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/ui/OverlayWindow.qml")));
@@ -27,16 +27,12 @@ Application::Application(QObject* parent)
     main_window = qobject_cast<QWindow*>(engine.rootObjects().at(0));
     overlay_window = qobject_cast<QWindow*>(engine.rootObjects().at(1));
 
-    toggle_keyhook_engaged(true);
-
     connect(clock_reader, &ClockReader::time_read, timer_controller, &TimerController::update_time_external);
-
     connect(timer_controller, &TimerController::event_occured, tts_manager, TTSManager::handle_event);
+    connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
 }
 
-Application::~Application() {
-    qDebug() << "Destroying window_controller";
-}
+Application::~Application() { }
 
 void Application::toggle_overlay_locked(bool lock)
 {
@@ -56,14 +52,6 @@ void Application::toggle_overlay_visible(bool visible)
     }
 }
 
-void Application::toggle_keyhook_engaged(bool engaged) {
-    if(engaged) {
-        connect(keyhook, &Keyhook::key_pressed, this, &Application::key_pressed, Qt::QueuedConnection);
-    } else {
-        disconnect(keyhook, &Keyhook::key_pressed, this, &Application::key_pressed);
-    }
-}
-
 void Application::toggle_clock_sync(bool sync) {
     if (sync) {
         clock_reader->start_reading();
@@ -72,76 +60,17 @@ void Application::toggle_clock_sync(bool sync) {
     }
 }
 
-void Application::key_pressed(unsigned int key)
-{
-    if(keybinding_pause_key) {
-        pause_key = key;
-        emit pause_keybind_changed();
-        return;
-    }
-
-    if(keybinding_set_key) {
-        set_key = key;
-        emit set_keybind_changed();
-        return;
-    }
-
-    if (key == pause_key) {
+void Application::handle_keybind_pressed(KeyBind keybind) {
+    if (keybind == KeyBind::pause) {
         if (timer_controller->is_running()) {
             timer_controller->pause();
             return;
         }
         timer_controller->start();
+        return;
     }
-    if (key == set_key) {
+    if (keybind == KeyBind::set) {
         timer_controller->set_time();
+        return;
     }
-}
-
-void Application::key_released(unsigned int key)
-{
-    qDebug("Key Released");
-}
-
-void Application::toggle_pause_keybind_active() {
-    set_pause_keybind_active(!keybinding_pause_key);
-}
-
-bool Application::is_pause_keybind_active() {
-    return keybinding_pause_key;
-}
-
-int Application::get_pause_key() {
-    return pause_key;
-}
-
-void Application::set_pause_keybind_active(bool active) {
-    if(keybinding_pause_key == active)
-        return;
-    keybinding_pause_key = active;
-    emit pause_keybind_active_changed();
-}
-
-
-void Application::toggle_set_keybind_active() {
-    set_set_keybind_active(!keybinding_set_key);
-}
-
-bool Application::is_set_keybind_active() {
-    return keybinding_set_key;
-}
-
-int Application::get_set_key() {
-    return set_key;
-}
-
-void Application::set_set_keybind_active(bool active) {
-    if(keybinding_set_key == active)
-        return;
-    keybinding_set_key = active;
-    emit set_keybind_active_changed();
-}
-
-QString Application::get_key_name(int keycode) {
-    return QString::fromStdString(KeyMap::get_key(keycode));
 }

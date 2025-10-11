@@ -31,6 +31,7 @@ set(SOURCES
     src/SettingsManager.cpp
     src/TimerController.cpp
     src/TTSManager.cpp
+    src/InputManager.cpp
 )
 
 qt_add_executable(deadclock ${SOURCES})
@@ -85,6 +86,7 @@ target_link_libraries(deadclock PRIVATE
     tesseract
     leptonica
 )
+
 file(COPY "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
      DESTINATION "${CMAKE_BINARY_DIR}"
 )

@@ -80,6 +80,7 @@ ApplicationWindow {
 
             Column {
                 spacing: 10
+                width: 200
                 Label {
                     text: "Speech Voice"
                 }
@@ -134,42 +135,40 @@ ApplicationWindow {
                         }
                     }
                 }
-
-
                 Label {
                     text: "Keybinds"
                 }
                 Button {
                     id: pause_keybind_button
                     text: {
-                        if (application.pause_keybind_active) {
-                            return "Setting key: " + application.get_key_name(application.pause_key)
+                        if (input.pause_keybind_active) {
+                            return "Setting key: " + input.get_key_name(input.pause_key)
                         } else {
-                            return "Start/Stop Timer: " + application.get_key_name(application.pause_key)
+                            return "Start/Stop Timer: " + input.get_key_name(input.pause_key)
                         }
                     }
-                    highlighted: application.pause_keybind_active
-                    enabled: !application.set_keybind_active
+                    highlighted: input.pause_keybind_active
+                    enabled: !input.set_keybind_active
                     ToolTip.visible: hovered
-                    ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to confirm/cancel"
+                    ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to cancel"
                     ToolTip.delay: 1000
-                    onClicked: application.toggle_pause_keybind_active()
+                    onClicked: input.toggle_pause_keybind_active()
                 }
                 Button {
                     id: set_keybind_button
                     text: {
-                        if (application.set_keybind_active) {
-                            return "Setting key: " + application.get_key_name(application.set_key)
+                        if (input.set_keybind_active) {
+                            return "Setting key: " + input.get_key_name(input.set_key)
                         } else {
-                            return "Set Timer: " + application.get_key_name(application.set_key)
+                            return "Set Timer: " + input.get_key_name(input.set_key)
                         }
                     }
-                    highlighted: application.set_keybind_active
-                    enabled: !application.pause_keybind_active
+                    highlighted: input.set_keybind_active
+                    enabled: !input.pause_keybind_active
                     ToolTip.visible: hovered
-                    ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to confirm/cancel"
+                    ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to cancel"
                     ToolTip.delay: 1000
-                    onClicked: application.toggle_set_keybind_active()
+                    onClicked: input.toggle_set_keybind_active()
                 }
             }
         }
