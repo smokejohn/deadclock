@@ -17,7 +17,6 @@ Application::Application(QObject* parent)
     engine.rootContext()->setContextProperty("settings", settings_manager);
     engine.rootContext()->setContextProperty("tts", tts_manager);
     engine.rootContext()->setContextProperty("input", input_manager);
-    engine.rootContext()->setContextProperty("clock_reader", clock_reader);
 
     engine.load(QUrl(QStringLiteral("qrc:/ui/MainWindow.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/ui/OverlayWindow.qml")));
