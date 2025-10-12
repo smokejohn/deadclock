@@ -32,7 +32,7 @@ ClockReader::ClockReader(QObject* parent)
     set_capture_region(x_pos, 0, width, height);
 
 
-    if (ocr_engine->Init("./", "eng" /*, tesseract::OEM_LSTM_ONLY*/)) {
+    if (ocr_engine->Init("./", "eng")) {
         qDebug() << "Could not initialize tesseract";
         ocr_engine.reset();
         return;
@@ -87,7 +87,6 @@ QString ClockReader::detect_digits()
 
     ocr_engine->SetImage(input_image);
     QString detected_text = ocr_engine->GetUTF8Text();
-    qDebug() << "Detected text: " << detected_text;
 
     ocr_engine->Clear();
     pixDestroy(&input_image);

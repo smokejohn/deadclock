@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import QtQuick.VectorImage
 import QtQuick.Layouts
 
 ApplicationWindow {
@@ -21,9 +20,10 @@ ApplicationWindow {
 
     Component.onCompleted: {
         // Load Settings from disk
-        speech_volume_slider.value = settings.load_setting("speech/volume")
-        speech_voice_selection.currentIndex = settings.load_setting("speech/voice")
-        lead_time_slider.value = settings.load_setting("timer/lead_time")
+        speech_volume_slider.value = settings.load_setting("speech/volume");
+        speech_voice_selection.currentIndex = settings.load_setting("speech/voice");
+        lead_time_slider.value = settings.load_setting("timer/lead_time");
+        console.log(timer_controller.parent);
     }
 
     ColumnLayout {
@@ -46,10 +46,10 @@ ApplicationWindow {
                 text: timer_controller.is_running ? "Stop" : "Start"
                 onClicked: {
                     if (timer_controller.is_running) {
-                        timer_controller.pause()
-                        return
+                        timer_controller.pause();
+                        return;
                     }
-                    timer_controller.start()
+                    timer_controller.start();
                 }
             }
             Button {
@@ -61,15 +61,15 @@ ApplicationWindow {
             spacing: 10
             Layout.alignment: Qt.AlignHCenter
             TextField {
-                id: input_minutes;
-                placeholderText: "Min";
+                id: input_minutes
+                placeholderText: "Min"
                 text: "00"
                 width: 60
                 onEditingFinished: timer_controller.set_last_set_minutes(parseInt(input_minutes.text))
             }
             TextField {
-                id: input_seconds;
-                placeholderText: "Sec";
+                id: input_seconds
+                placeholderText: "Sec"
                 text: "20"
                 width: 60
                 onEditingFinished: timer_controller.set_last_set_seconds(parseInt(input_seconds.text))
@@ -89,7 +89,7 @@ ApplicationWindow {
                     model: tts.get_available_voices()
                     width: parent.width
                     onActivated: {
-                        settings.save_setting("speech/voice", currentIndex)
+                        settings.save_setting("speech/voice", currentIndex);
                         tts.say(currentText);
                     }
                 }
@@ -109,7 +109,7 @@ ApplicationWindow {
 
                     onPressedChanged: {
                         if (!pressed) {
-                            settings.save_setting("speech/volume", value)
+                            settings.save_setting("speech/volume", value);
                             tts.say_test();
                         }
                     }
@@ -131,7 +131,7 @@ ApplicationWindow {
 
                     onPressedChanged: {
                         if (!pressed) {
-                            settings.save_setting("timer/lead_time", value)
+                            settings.save_setting("timer/lead_time", value);
                         }
                     }
                 }
@@ -142,9 +142,9 @@ ApplicationWindow {
                     id: pause_keybind_button
                     text: {
                         if (input.pause_keybind_active) {
-                            return "Setting key: " + input.get_key_name(input.pause_key)
+                            return "Setting key: " + input.get_key_name(input.pause_key);
                         } else {
-                            return "Start/Stop Timer: " + input.get_key_name(input.pause_key)
+                            return "Start/Stop Timer: " + input.get_key_name(input.pause_key);
                         }
                     }
                     highlighted: input.pause_keybind_active
@@ -158,9 +158,9 @@ ApplicationWindow {
                     id: set_keybind_button
                     text: {
                         if (input.set_keybind_active) {
-                            return "Setting key: " + input.get_key_name(input.set_key)
+                            return "Setting key: " + input.get_key_name(input.set_key);
                         } else {
-                            return "Set Timer: " + input.get_key_name(input.set_key)
+                            return "Set Timer: " + input.get_key_name(input.set_key);
                         }
                     }
                     highlighted: input.set_keybind_active
@@ -181,7 +181,7 @@ ApplicationWindow {
                     text: "Show Overlay"
 
                     onCheckedChanged: {
-                        application.toggle_overlay_visible(checked)
+                        application.toggle_overlay_visible(checked);
                     }
                 }
                 Switch {
@@ -190,50 +190,14 @@ ApplicationWindow {
                     enabled: overlay_toggle_visible.checked
 
                     onCheckedChanged: {
-                        application.toggle_overlay_locked(checked)
+                        application.toggle_overlay_locked(checked);
                     }
                 }
             }
         }
-
-        GroupBox {
-            title: "Clock Sync"
-            Column {
-                spacing: 5
-                Switch {
-                    id: clock_sync_toggle
-                    text: "Automatic clock sync"
-                    onCheckedChanged: {
-                        application.toggle_clock_sync(checked)
-                    }
-                }
-                Switch {
-                    id: clock_sync_show_capture_rect
-                    text: "Show capture region"
-                    onCheckedChanged: {
-                        const capture_rect = clock_reader.get_capture_region()
-                        capture_region_debug.x = capture_rect.x
-                        capture_region_debug.y = capture_rect.y
-                        capture_region_debug.width = capture_rect.width
-                        capture_region_debug.height = capture_rect.height
-                    }
-                }
-            }
-        }
-    }
-
-    Window {
-        id: capture_region_debug
-        visible: clock_sync_show_capture_rect.checked
-        color: Qt.rgba(0.3, 0.0, 0.0, 0.5)
-        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-        x: 0
-        y: 0
-        width: 100
-        height: 100
     }
 
     onClosing: {
-        Qt.quit()
+        Qt.quit();
     }
 }

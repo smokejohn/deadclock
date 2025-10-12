@@ -7,6 +7,7 @@
 #include <bitset>
 
 #include "SettingsManager.h"
+#include "ClockReader.h"
 #include "data/Common.h"
 
 class TimerController : public QObject
@@ -51,6 +52,7 @@ private:
     bool event_enabled(EventType type);
 
     QTimer* timer;
+    ClockReader* clock_reader;
     unsigned int elapsed_seconds { 0 };
     QPointer<SettingsManager> settings_manager { nullptr };
     std::bitset<6> enabled_events;

@@ -1,14 +1,18 @@
 #include <QDebug>
 
 #include "TimerController.h"
+#include <tesseract/baseapi.h>
 
 TimerController::TimerController(SettingsManager* settings_manager, QObject* parent)
     : QObject(parent)
     , timer(new QTimer(this))
     , settings_manager(settings_manager)
+    , clock_reader(new ClockReader(this))
 {
     connect(timer, &QTimer::timeout, this, &TimerController::update_time);
     timer->setInterval(1000);
+
+    connect(clock_reader, &ClockReader::time_read, this, &TimerController::update_time_external);
 
     enabled_events.set();
 }
@@ -16,12 +20,14 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
 void TimerController::start()
 {
     timer->start();
+    clock_reader->start_reading();
     emit running_changed();
 }
 
 void TimerController::pause()
 {
     timer->stop();
+    clock_reader->stop_reading();
     emit running_changed();
 }
 
