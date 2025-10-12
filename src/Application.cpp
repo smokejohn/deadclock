@@ -26,6 +26,8 @@ Application::Application(QObject* parent)
 
     connect(timer_controller, &TimerController::event_occured, tts_manager, &TTSManager::handle_event);
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
+
+    toggle_overlay_locked(true);
 }
 
 Application::~Application()

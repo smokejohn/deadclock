@@ -188,6 +188,7 @@ ApplicationWindow {
                     id: overlay_toggle_locked
                     text: "Lock Overlay"
                     enabled: overlay_toggle_visible.checked
+                    checked: true
 
                     onCheckedChanged: {
                         application.toggle_overlay_locked(checked);
