@@ -31,6 +31,7 @@ set(SOURCES
     src/SettingsManager.cpp
     src/TimerController.cpp
     src/TTSManager.cpp
+    src/NotificationManager.cpp
     src/InputManager.cpp
 )
 
@@ -60,6 +61,8 @@ qt_add_resources(deadclock "images"
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_target_properties(deadclock PROPERTIES WIN32_EXECUTABLE TRUE)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(deadclock PRIVATE QT_QML_DEBUG)
 endif()
 
 target_include_directories(deadclock PRIVATE 
@@ -68,7 +71,7 @@ target_include_directories(deadclock PRIVATE
     ${LEPTONICA_INCLUDE_DIRS}
 )
 
-link_directories(
+target_link_directories(deadclock PRIVATE
     ${TESSERACT_LIBRARY_DIRS}
     ${LEPTONICA_LIBRARY_DIRS}
 )
@@ -86,6 +89,7 @@ target_link_libraries(deadclock PRIVATE
     tesseract
     leptonica
 )
+
 
 file(COPY "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
      DESTINATION "${CMAKE_BINARY_DIR}"

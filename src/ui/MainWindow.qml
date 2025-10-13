@@ -23,7 +23,6 @@ ApplicationWindow {
         speech_volume_slider.value = settings.load_setting("speech/volume");
         speech_voice_selection.currentIndex = settings.load_setting("speech/voice");
         lead_time_slider.value = settings.load_setting("timer/lead_time");
-        console.log(timer_controller.parent);
     }
 
     ColumnLayout {
@@ -175,10 +174,12 @@ ApplicationWindow {
         GroupBox {
             title: "Overlay"
             Column {
+                width: 200
                 spacing: 5
                 Switch {
                     id: overlay_toggle_visible
                     text: "Show Overlay"
+                    width: parent.width
 
                     onCheckedChanged: {
                         application.toggle_overlay_visible(checked);
@@ -189,9 +190,21 @@ ApplicationWindow {
                     text: "Lock Overlay"
                     enabled: overlay_toggle_visible.checked
                     checked: true
+                    width: parent.width
 
                     onCheckedChanged: {
                         application.toggle_overlay_locked(checked);
+                    }
+                }
+                Switch {
+                    id: overlay_show_notifications
+                    text: "Show Notifications"
+                    enabled: overlay_toggle_visible.checked
+                    checked: false
+                    width: parent.width
+
+                    onCheckedChanged: {
+                        application.toggle_notifications(checked);
                     }
                 }
             }

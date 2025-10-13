@@ -5,6 +5,7 @@
 #include <QQuickView>
 
 #include "InputManager.h"
+#include "NotificationManager.h"
 #include "SettingsManager.h"
 #include "TTSManager.h"
 #include "TimerController.h"
@@ -21,6 +22,7 @@ public:
 
     Q_INVOKABLE void toggle_overlay_visible(bool visible);
     Q_INVOKABLE void toggle_overlay_locked(bool lock);
+    Q_INVOKABLE void toggle_notifications(bool show);
 
 signals:
     void overlay_locked(bool locked);
@@ -31,10 +33,12 @@ private slots:
 private:
     QQmlApplicationEngine engine;
     QWindow* main_window;
-    QWindow* overlay_window;
+    QWindow* timer_overlay;
+    QWindow* notification_overlay;
 
     SettingsManager* settings_manager;
     TimerController* timer_controller;
     TTSManager* tts_manager;
+    NotificationManager* notification_manager;
     InputManager* input_manager;
 };
