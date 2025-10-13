@@ -7,7 +7,7 @@ NotificationManager::NotificationManager(SettingsManager* settings_manager, QObj
     , aggregation_timer(new QTimer(this))
 {
     aggregation_timer->setSingleShot(true);
-    aggregation_timer->setInterval(500);
+    aggregation_timer->setInterval(250);
 
     connect(aggregation_timer, &QTimer::timeout, this, &NotificationManager::flush_aggregated_messages);
 }

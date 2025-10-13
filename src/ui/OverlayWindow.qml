@@ -210,7 +210,7 @@ Item {
                 target: notification_container
                 from: 0.0
                 to: 1.0
-                duration: 1000
+                duration: 100
             }
 
             OpacityAnimator {
