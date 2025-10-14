@@ -110,7 +110,7 @@ Item {
         title: "Notification Overlay"
         objectName: "notification_overlay"
         visible: false
-        width: 400
+        width: 600
         height: 200
         color: "transparent"
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
@@ -224,11 +224,11 @@ Item {
             Rectangle {
                 id: notification_frame
 
-                property int padding: 16
-                property int max_width: 400
+                property int padding: 20
+                property int max_width: notification_overlay.width
 
-                radius: padding
-                color: "#aa9b7858"
+                radius: padding / 2
+                color: "#dd9b7858"
 
                 anchors.centerIn: parent
 
@@ -243,7 +243,10 @@ Item {
                     anchors.topMargin: notification_frame.padding
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: notification_frame.width - 2 * notification_frame.padding
-                    font.pixelSize: 16
+                    font.pixelSize: 24
+                    lineHeight: 1.25
+                    lineHeightMode: Text.ProportionalHeight
+
                     color: "white"
                     maximumLineCount: -1
                 }

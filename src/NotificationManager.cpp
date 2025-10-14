@@ -29,22 +29,22 @@ void NotificationManager::handle_event(EventType type)
     QString message {};
     switch (type) {
         case EventType::small_camps:
-            message = "Small camps and breakables will spawn";
+            message = "Small camps and breakables spawn";
             break;
         case EventType::medium_camps:
-            message = "Medium camps will spawn";
+            message = "Medium camps spawn";
             break;
         case EventType::large_camps:
-            message = "Sinners Sacrifice and large camps will spawn";
+            message = "Sinners Sacrifice and large camps spawn";
             break;
         case EventType::mid_boss:
-            message = "Mid Boss and breakables above it will spawn";
+            message = "Mid Boss spawns";
             break;
         case EventType::runes:
-            message = "Runes will spawn";
+            message = "Runes spawn";
             break;
         case EventType::urn:
-            message = "Urn will spawn";
+            message = "Urn spawns";
             break;
         default:
             qDebug() << "Unknown Event Type";
