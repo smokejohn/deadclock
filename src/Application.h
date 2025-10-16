@@ -36,6 +36,10 @@ private:
     QWindow* timer_overlay;
     QWindow* notification_overlay;
 
+#ifdef PLATFORM_WINDOWS
+    void add_dwm_window_decoration();
+#endif
+
     SettingsManager* settings_manager;
     TimerController* timer_controller;
     TTSManager* tts_manager;

@@ -4,6 +4,10 @@
 #include <QIcon>
 #include <QQmlContext>
 
+#ifdef PLATFORM_WINDOWS
+#include <Windows.h>
+#include <dwmapi.h>
+#endif
 
 Application::Application(QObject* parent)
     : QObject(parent)
@@ -27,6 +31,10 @@ Application::Application(QObject* parent)
     main_window = qobject_cast<QWindow*>(engine.rootObjects().at(0));
     timer_overlay = engine.rootObjects().at(1)->findChild<QWindow*>("timer_overlay");
     notification_overlay = engine.rootObjects().at(1)->findChild<QWindow*>("notification_overlay");
+
+#ifdef PLATFORM_WINDOWS
+    add_dwm_window_decoration();
+#endif
 
     connect(timer_controller, &TimerController::event_occured, tts_manager, &TTSManager::handle_event);
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
@@ -71,9 +79,15 @@ void Application::toggle_overlay_visible(bool visible)
 void Application::toggle_notifications(bool show)
 {
     if (show) {
-        connect(timer_controller, &TimerController::event_occured, notification_manager, &NotificationManager::handle_event);
+        connect(timer_controller,
+                &TimerController::event_occured,
+                notification_manager,
+                &NotificationManager::handle_event);
     } else {
-        disconnect(timer_controller, &TimerController::event_occured, notification_manager, &NotificationManager::handle_event);
+        disconnect(timer_controller,
+                   &TimerController::event_occured,
+                   notification_manager,
+                   &NotificationManager::handle_event);
     }
 }
 
@@ -92,3 +106,19 @@ void Application::handle_keybind_pressed(KeyBind keybind)
         return;
     }
 }
+
+#ifdef PLATFORM_WINDOWS
+void Application::add_dwm_window_decoration()
+{
+    constexpr auto DWMWA_WINDOW_CORNER_PREFERENCE { 33 };
+    constexpr auto DWMWCP_ROUND { 2 };
+    constexpr auto DMMWA_USE_IMMERSIVE_DARK_MODE { 20 };
+
+    HWND hwnd = reinterpret_cast<HWND>(main_window->winId());
+    DWORD cornerPreference = DWMWCP_ROUND;
+    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPreference, sizeof(cornerPreference));
+
+    MARGINS margins = { 1, 1, 1, 1 };
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
+}
+#endif

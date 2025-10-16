@@ -102,6 +102,11 @@ target_link_libraries(deadclock PRIVATE
     leptonica
 )
 
+if(WIN32)
+    target_link_libraries(deadclock PRIVATE Dwmapi)
+    target_compile_definitions(deadclock PRIVATE PLATFORM_WINDOWS)
+endif()
+
 set(ocr_data_path "${CMAKE_SOURCE_DIR}/resources/ocr/eng.traineddata")
 
 file(COPY "${ocr_data_path}"
