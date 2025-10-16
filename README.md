@@ -22,6 +22,9 @@ An overlay window that runs on top of DeadLock game window and shows a timer
 right under the ingame DeadLock timer. This window can be repositioned and then locked
 which makes it unresponsive to any input.
 
+### Notifications
+When enabled the overlay window shows notifications for alerts on a chosen position on the screen.
+
 ### Text-To-Speech
 Uses the systems Text-To-Speech feature to read alert messages at specific times.
 The volume of the TTS feature can be adjusted.
