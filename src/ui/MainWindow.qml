@@ -16,6 +16,9 @@ ApplicationWindow {
     Material.accent: Qt.color("#9b7858")
 
     property int margin: 16
+    property int spacing: 16
+    property int spacing_small: 8
+    property int spacing_tiny: 4
 
     // Rectangle {
     //     color: "transparent"
@@ -33,7 +36,7 @@ ApplicationWindow {
     Column {
         id: main_column
         anchors.fill: parent
-        spacing: main_window.margin
+        spacing: main_window.spacing
 
         Rectangle {
             id: title_bar
@@ -65,6 +68,7 @@ ApplicationWindow {
             Text {
                 anchors.centerIn: parent
                 text: "Deadclock"
+                font.pointSize: 11
                 font.bold: true
                 color: titlebar_mousearea.containsMouse ? Qt.rgba(1.0, 1.0, 1.0, 0.95) : Qt.rgba(1.0, 1.0, 1.0, 0.75)
             }
@@ -113,22 +117,15 @@ ApplicationWindow {
                 }
             }
         }
-        Item {
-            id: spacer
-            height: main_window.margin / 2
-            width: parent.width
-        }
-
         Text {
             id: timer
             text: timer_controller.display_time
             anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 40
+            font.pointSize: 36
             color: Qt.color("white")
         }
-
         Row {
-            spacing: 5
+            spacing: main_window.spacing_small
             anchors.horizontalCenter: parent.horizontalCenter
             Button {
                 text: timer_controller.is_running ? "Stop" : "Start"
@@ -146,20 +143,20 @@ ApplicationWindow {
             }
         }
         Row {
-            spacing: 10
+            spacing: main_window.spacing_small
             anchors.horizontalCenter: parent.horizontalCenter
             TextField {
                 id: input_minutes
                 placeholderText: "Min"
                 text: "00"
-                width: 60
+                width: 70
                 onEditingFinished: timer_controller.set_last_set_minutes(parseInt(input_minutes.text))
             }
             TextField {
                 id: input_seconds
                 placeholderText: "Sec"
                 text: "20"
-                width: 60
+                width: 70
                 onEditingFinished: timer_controller.set_last_set_seconds(parseInt(input_seconds.text))
             }
         }
@@ -170,7 +167,7 @@ ApplicationWindow {
             width: parent.width - main_window.margin * 2
 
             Column {
-                spacing: 10
+                spacing: main_window.spacing_small
                 width: parent.width
                 Label {
                     text: "Speech Voice"
@@ -270,7 +267,7 @@ ApplicationWindow {
 
             Column {
                 width: main_window.width
-                spacing: 5
+                spacing: main_window.spacing_small
                 Switch {
                     id: overlay_toggle_visible
                     text: "Show Overlay"

@@ -59,6 +59,18 @@ qt_add_resources(deadclock "images"
         resources/images/deadclock_icon.png
 )
 
+qt_add_resources(deadclock "fonts"
+    PREFIX "/fonts"
+    BASE "resources/fonts"
+    FILES
+        resources/fonts/OpenSans-Regular.ttf
+        resources/fonts/OpenSans-SemiBold.ttf
+        resources/fonts/Roboto-Regular.ttf
+        resources/fonts/Roboto-SemiBold.ttf
+        resources/fonts/Lato-Regular.ttf
+        resources/fonts/Lato-Bold.ttf
+)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_target_properties(deadclock PROPERTIES WIN32_EXECUTABLE TRUE)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -90,8 +102,9 @@ target_link_libraries(deadclock PRIVATE
     leptonica
 )
 
+set(ocr_data_path "${CMAKE_SOURCE_DIR}/resources/ocr/eng.traineddata")
 
-file(COPY "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
+file(COPY "${ocr_data_path}"
      DESTINATION "${CMAKE_BINARY_DIR}"
 )
 
@@ -107,6 +120,6 @@ qt_generate_deploy_qml_app_script(
 )
 install(SCRIPT ${deploy_script})
 
-install(FILES "${CMAKE_SOURCE_DIR}/resources/eng.traineddata"
+install(FILES "${ocr_data_path}"
         DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
