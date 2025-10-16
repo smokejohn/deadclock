@@ -32,6 +32,18 @@ Item {
         Material.theme: Material.Dark
         Material.accent: Material.Blue
 
+        Component.onCompleted: {
+            // Load Settings from disk
+            const x_pos = settings.load_setting("timer/window_x_pos");
+            if (x_pos !== undefined) {
+                timer_overlay.x = x_pos;
+            }
+            const y_pos = settings.load_setting("timer/window_y_pos");
+            if (y_pos !== undefined) {
+                timer_overlay.y = y_pos;
+            }
+        }
+
         Item {
             id: timer_overlay_manipulators
             anchors.fill: parent
@@ -48,7 +60,7 @@ Item {
             Rectangle {
                 anchors.top: parent.top
                 width: parent.width
-                height: 15
+                height: 16
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.1)
 
                 MouseArea {
@@ -68,12 +80,15 @@ Item {
                     onDoubleClicked: mouse => {
                         timer_overlay.y = Qt.application.screens[0].virtualY;
                     }
+                    onReleased: mouse => {
+                        settings.save_setting("timer/window_y_pos", timer_overlay.y);
+                    }
                 }
             }
             Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width
-                height: 15
+                height: 16
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.1)
 
                 MouseArea {
@@ -92,6 +107,9 @@ Item {
                     }
                     onDoubleClicked: mouse => {
                         timer_overlay.x = Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2;
+                    }
+                    onReleased: mouse => {
+                        settings.save_setting("timer/window_x_pos", timer_overlay.x);
                     }
                 }
             }
@@ -120,6 +138,18 @@ Item {
         Material.theme: Material.Dark
         Material.accent: Material.Blue
 
+        Component.onCompleted: {
+            // Load Settings from disk
+            const x_pos = settings.load_setting("notification/window_x_pos");
+            if (x_pos !== undefined) {
+                notification_overlay.x = x_pos;
+            }
+            const y_pos = settings.load_setting("notification/window_y_pos");
+            if (y_pos !== undefined) {
+                notification_overlay.y = y_pos;
+            }
+        }
+
         Item {
             id: notification_overlay_manipulators
             anchors.fill: parent
@@ -136,7 +166,7 @@ Item {
             Rectangle {
                 anchors.top: parent.top
                 width: parent.width
-                height: 15
+                height: 16
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.1)
 
                 MouseArea {
@@ -154,14 +184,17 @@ Item {
                             notification_overlay.y += mouse.y - start_y;
                     }
                     onDoubleClicked: mouse => {
-                        notification_overlay.y = Qt.application.screens[0].virtualY;
+                        notification_overlay.y = Qt.application.screens[0].virtualY + 200;
+                    }
+                    onReleased: mouse => {
+                        settings.save_setting("notification/window_y_pos", notification_overlay.y);
                     }
                 }
             }
             Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width
-                height: 15
+                height: 16
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.1)
 
                 MouseArea {
@@ -180,6 +213,9 @@ Item {
                     }
                     onDoubleClicked: mouse => {
                         notification_overlay.x = Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2;
+                    }
+                    onReleased: mouse => {
+                        settings.save_setting("notification/window_x_pos", notification_overlay.x);
                     }
                 }
             }
