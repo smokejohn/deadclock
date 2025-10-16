@@ -25,7 +25,7 @@ Item {
         width: 100
         height: 100
         color: Qt.color("transparent")
-        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY
 
@@ -131,7 +131,7 @@ Item {
         width: 600
         height: 200
         color: Qt.color("transparent")
-        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY + 200
 
