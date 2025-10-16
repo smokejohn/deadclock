@@ -1,22 +1,28 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import QtQuick.Layouts
 
 ApplicationWindow {
     id: main_window
     objectName: "main_window"
     visible: true
-    width: root.implicitWidth + 40
-    height: root.implicitHeight + 40
-    minimumWidth: root.implicitWidth + 40
-    minimumHeight: root.implicitHeight + 40
-    maximumWidth: root.implicitWidth + 40
-    maximumHeight: root.implicitHeight + 40
+    width: 300
+    minimumHeight: main_column.implicitHeight + margin
+    maximumHeight: main_column.implicitHeight + margin
     title: "Deadclock"
+    flags: Qt.FramelessWindowHint | Qt.Window
 
     Material.theme: Material.Dark
-    Material.accent: "#9b7858"
+    Material.accent: Qt.color("#9b7858")
+
+    property int margin: 16
+
+    // Rectangle {
+    //     color: "transparent"
+    //     anchors.fill: main_column
+    //     border.width: 1
+    //     border.color: Qt.color("white")
+    // }
 
     Component.onCompleted: {
         // Load Settings from disk
@@ -24,23 +30,106 @@ ApplicationWindow {
         speech_voice_selection.currentIndex = settings.load_setting("speech/voice");
         lead_time_slider.value = settings.load_setting("timer/lead_time");
     }
-
-    ColumnLayout {
-        id: root
+    Column {
+        id: main_column
         anchors.fill: parent
-        anchors.centerIn: parent
-        anchors.margins: 20
-        spacing: 10
+        spacing: main_window.margin
+
+        Rectangle {
+            id: title_bar
+            height: 32
+            color: Qt.color("#222222")
+            width: parent.width
+
+            MouseArea {
+                id: titlebar_mousearea
+                anchors.fill: parent
+                hoverEnabled: true
+
+                property variant click_pos: "1,1"
+
+                onPressed: mouse => {
+                    click_pos = Qt.point(mouse.x, mouse.y);
+                }
+
+                onPositionChanged: mouse => {
+                    if (!mouse.buttons & Qt.LeftButton) {
+                        return;
+                    }
+                    var delta = Qt.point(mouse.x - click_pos.x, mouse.y - click_pos.y);
+                    main_window.x += delta.x;
+                    main_window.y += delta.y;
+                }
+            }
+
+            Text {
+                anchors.centerIn: parent
+                text: "Deadclock"
+                font.bold: true
+                color: titlebar_mousearea.containsMouse ? Qt.rgba(1.0, 1.0, 1.0, 0.95) : Qt.rgba(1.0, 1.0, 1.0, 0.75)
+            }
+
+            Row {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                Rectangle {
+                    id: minimize_container
+                    width: 32
+                    height: 32
+                    color: minimize_mousearea.containsMouse ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : Qt.color("transparent")
+
+                    MouseArea {
+                        id: minimize_mousearea
+                        anchors.fill: parent
+                        onClicked: main_window.showMinimized()
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                    }
+                    Text {
+                        text: "–"
+                        anchors.centerIn: parent
+                        color: Qt.color("white")
+                    }
+                }
+                Rectangle {
+                    id: close_container
+                    width: 32
+                    height: 32
+                    color: close_mousearea.containsMouse ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : Qt.color("transparent")
+
+                    MouseArea {
+                        id: close_mousearea
+                        anchors.fill: parent
+                        onClicked: Qt.quit()
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                    }
+                    Text {
+                        text: "✕"
+                        anchors.centerIn: parent
+                        color: Qt.color("white")
+                    }
+                }
+            }
+        }
+        Item {
+            id: spacer
+            height: main_window.margin / 2
+            width: parent.width
+        }
+
         Text {
+            id: timer
             text: timer_controller.display_time
+            anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 40
-            color: "white"
-            Layout.alignment: Qt.AlignHCenter
+            color: Qt.color("white")
         }
 
         Row {
             spacing: 5
-            Layout.alignment: Qt.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             Button {
                 text: timer_controller.is_running ? "Stop" : "Start"
                 onClicked: {
@@ -58,7 +147,7 @@ ApplicationWindow {
         }
         Row {
             spacing: 10
-            Layout.alignment: Qt.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             TextField {
                 id: input_minutes
                 placeholderText: "Min"
@@ -76,10 +165,13 @@ ApplicationWindow {
         }
         GroupBox {
             title: "Settings"
+            id: settings_group
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - main_window.margin * 2
 
             Column {
                 spacing: 10
-                width: 200
+                width: parent.width
                 Label {
                     text: "Speech Voice"
                 }
@@ -173,8 +265,11 @@ ApplicationWindow {
         }
         GroupBox {
             title: "Overlay"
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - main_window.margin * 2
+
             Column {
-                width: 200
+                width: main_window.width
                 spacing: 5
                 Switch {
                     id: overlay_toggle_visible

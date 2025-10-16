@@ -24,7 +24,7 @@ Item {
         visible: false
         width: 100
         height: 100
-        color: "transparent"
+        color: Qt.color("transparent")
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY
@@ -41,8 +41,8 @@ Item {
                 id: timer_overlay_border
                 anchors.fill: parent
                 border.width: 1
-                border.color: "white"
-                color: "transparent"
+                border.color: Qt.color("white")
+                color: Qt.color("transparent")
             }
 
             Rectangle {
@@ -100,7 +100,7 @@ Item {
             anchors.centerIn: parent
             text: timer_controller.display_time
             font.pixelSize: 22
-            color: "white"
+            color: Qt.color("white")
             Layout.alignment: Qt.AlignCenter
         }
     }
@@ -112,7 +112,7 @@ Item {
         visible: false
         width: 600
         height: 200
-        color: "transparent"
+        color: Qt.color("transparent")
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY + 200
@@ -129,8 +129,8 @@ Item {
                 id: notification_overlay_border
                 anchors.fill: parent
                 border.width: 1
-                border.color: "white"
-                color: "transparent"
+                border.color: Qt.color("white")
+                color: Qt.color("transparent")
             }
 
             Rectangle {
@@ -228,7 +228,7 @@ Item {
                 property int max_width: notification_overlay.width
 
                 radius: padding / 2
-                color: "#dd9b7858"
+                color: Qt.color("#dd9b7858")
 
                 anchors.centerIn: parent
 
@@ -247,7 +247,7 @@ Item {
                     lineHeight: 1.25
                     lineHeightMode: Text.ProportionalHeight
 
-                    color: "white"
+                    color: Qt.color("white")
                     maximumLineCount: -1
                 }
             }
