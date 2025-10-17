@@ -100,7 +100,7 @@ ApplicationWindow {
                     id: close_container
                     width: 32
                     height: 32
-                    color: close_mousearea.containsMouse ? Qt.rgba(1.0, 1.0, 1.0, 0.2) : Qt.color("transparent")
+                    color: close_mousearea.containsMouse ? Qt.color("#a62f34") : Qt.color("transparent")
 
                     MouseArea {
                         id: close_mousearea
