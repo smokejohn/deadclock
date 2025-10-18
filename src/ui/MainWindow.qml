@@ -13,12 +13,13 @@ ApplicationWindow {
     flags: Qt.FramelessWindowHint | Qt.Window
 
     Material.theme: Material.Dark
-    Material.accent: Qt.color("#9b7858")
+    Material.accent: main_window.accent_color
 
     property int margin: 16
     property int spacing: 16
     property int spacing_small: 8
     property int spacing_tiny: 4
+    property var accent_color: Qt.color("#9b7858")
 
     // Rectangle {
     //     color: "transparent"
@@ -117,12 +118,36 @@ ApplicationWindow {
                 }
             }
         }
-        Text {
-            id: timer
-            text: timer_controller.display_time
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 36
-            color: Qt.color("white")
+        Rectangle {
+            width: parent.width
+            height: timer.height + main_window.margin * 2
+            color: Qt.rgba(0.0, 0.0, 0.0, 0.1)
+
+            Text {
+                id: timer
+                text: timer_controller.display_time
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: 36
+                color: Qt.color("white")
+            }
+
+            Rectangle {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+                height: 2
+                color: timer_controller.is_running ? main_window.accent_color : Qt.color("transparent")
+
+                SequentialAnimation on opacity {
+                    loops: Animation.Infinite
+                    running: timer_controller.is_running
+                    NumberAnimation { to: 0.0; duration: 2500; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: 1.0; duration: 2500; easing.type: Easing.InOutSine }
+                }
+            }
         }
         Row {
             spacing: main_window.spacing_small
@@ -161,8 +186,8 @@ ApplicationWindow {
             }
         }
         GroupBox {
-            title: "Settings"
             id: settings_group
+            title: "Settings"
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - main_window.margin * 2
 
