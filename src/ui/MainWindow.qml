@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
+import Deadclock.Ui 1.0
+
 ApplicationWindow {
     id: main_window
     objectName: "main_window"
@@ -13,19 +15,17 @@ ApplicationWindow {
     flags: Qt.FramelessWindowHint | Qt.Window
 
     Material.theme: Material.Dark
-    Material.accent: Qt.color("#9b7858")
+    Material.accent: accent_color
 
     property int margin: 16
     property int spacing: 16
     property int spacing_small: 8
     property int spacing_tiny: 4
-
-    // Rectangle {
-    //     color: "transparent"
-    //     anchors.fill: main_column
-    //     border.width: 1
-    //     border.color: Qt.color("white")
-    // }
+    // property color accent_color: Qt.color("#61d38e")
+    // property color accent_color: Qt.color("#49a06b")
+    // property color accent_color: Qt.color("#3f8a5c")
+    property color accent_color: Qt.color("#298753")
+    // property color accent_color: Qt.color("#2c6344")
 
     Component.onCompleted: {
         // Load Settings from disk
@@ -127,8 +127,9 @@ ApplicationWindow {
         Row {
             spacing: main_window.spacing_small
             anchors.horizontalCenter: parent.horizontalCenter
-            Button {
+            DCButton {
                 text: timer_controller.is_running ? "Stop" : "Start"
+                highlighted: !timer_controller.is_running
                 onClicked: {
                     if (timer_controller.is_running) {
                         timer_controller.pause();
@@ -137,7 +138,7 @@ ApplicationWindow {
                     timer_controller.start();
                 }
             }
-            Button {
+            DCButton {
                 text: "Set"
                 onClicked: timer_controller.set_time(parseInt(input_minutes.text), parseInt(input_seconds.text))
             }
@@ -150,6 +151,7 @@ ApplicationWindow {
                 placeholderText: "Min"
                 text: "00"
                 width: 70
+                maximumLength: 3
                 onEditingFinished: timer_controller.set_last_set_minutes(parseInt(input_minutes.text))
             }
             TextField {
@@ -157,12 +159,14 @@ ApplicationWindow {
                 placeholderText: "Sec"
                 text: "20"
                 width: 70
+                maximumLength: 2
+
                 onEditingFinished: timer_controller.set_last_set_seconds(parseInt(input_seconds.text))
             }
         }
         GroupBox {
-            title: "Settings"
             id: settings_group
+            title: "Settings"
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - main_window.margin * 2
 
@@ -226,7 +230,7 @@ ApplicationWindow {
                 Label {
                     text: "Keybinds"
                 }
-                Button {
+                DCButton {
                     id: pause_keybind_button
                     text: {
                         if (input.pause_keybind_active) {
@@ -242,7 +246,7 @@ ApplicationWindow {
                     ToolTip.delay: 1000
                     onClicked: input.toggle_pause_keybind_active()
                 }
-                Button {
+                DCButton {
                     id: set_keybind_button
                     text: {
                         if (input.set_keybind_active) {
@@ -257,6 +261,14 @@ ApplicationWindow {
                     ToolTip.text: "Click to to enable keybinding, then press desired key. Click again to cancel"
                     ToolTip.delay: 1000
                     onClicked: input.toggle_set_keybind_active()
+                }
+                Label {
+                    text: "Alerts"
+                }
+                DCButton {
+                    id: alert_popup_button
+                    text: "Configure Alerts"
+                    onClicked: alert_popup.open()
                 }
             }
         }
@@ -297,6 +309,82 @@ ApplicationWindow {
 
                     onCheckedChanged: {
                         application.toggle_notifications(checked);
+                    }
+                }
+            }
+        }
+        Popup {
+            id: alert_popup
+            modal: true
+            focus: true
+            width: main_window.width - main_window.margin * 2
+            // height:
+            anchors.centerIn: parent
+            // closePolicy: Popup.NoAutoClose
+
+            function set_switch_states(bitmask_string) {
+                console.log("setting switch states with: ", bitmask_string);
+                if (bitmask_string.length !== 6) {
+                    console.warn("invalid input length for enabled event bitmask string");
+                    return;
+                }
+                small_camps_switch.checked = bitmask_string.charAt(0) === "1";
+                medium_camps_switch.checked = bitmask_string.charAt(1) === "1";
+                large_camps_switch.checked = bitmask_string.charAt(2) === "1";
+                midboss_switch.checked = bitmask_string.charAt(3) === "1";
+                runes_switch.checked = bitmask_string.charAt(4) === "1";
+                urn_switch.checked = bitmask_string.charAt(5) === "1";
+            }
+            Component.onCompleted: {
+                set_switch_states(settings.load_setting("timer/enabled_events"));
+            }
+
+            Material.theme: Material.Dark
+
+            Overlay.modal: Rectangle {
+                color: Qt.color("#80000000")
+            }
+
+            background: Rectangle {
+                color: Material.background
+                radius: 8
+            }
+
+            contentItem: Column {
+                spacing: main_window.spacing_small
+                Switch {
+                    id: small_camps_switch
+                    text: "Small Camps"
+                }
+                Switch {
+                    id: medium_camps_switch
+                    text: "Medium Camps"
+                }
+                Switch {
+                    id: large_camps_switch
+                    text: "Large Camps"
+                }
+                Switch {
+                    id: midboss_switch
+                    text: "Mid Boss"
+                }
+                Switch {
+                    id: runes_switch
+                    text: "Runes"
+                }
+                Switch {
+                    id: urn_switch
+                    text: "Urn"
+                }
+                DCButton {
+                    text: "Apply"
+                    highlighted: true
+                    onClicked: {
+                        // set current state in settings and adjust bitset in timercontroller
+                        let bitmask_string = (small_camps_switch.checked ? "1" : "0") + (medium_camps_switch.checked ? "1" : "0") + (large_camps_switch.checked ? "1" : "0") + (midboss_switch.checked ? "1" : "0") + (runes_switch.checked ? "1" : "0") + (urn_switch.checked ? "1" : "0");
+                        console.log("Saving event mask: ", bitmask_string);
+                        settings.save_setting("timer/enabled_events", bitmask_string);
+                        alert_popup.close();
                     }
                 }
             }

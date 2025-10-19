@@ -37,10 +37,19 @@ set(SOURCES
 
 qt_add_executable(deadclock ${SOURCES})
 
+# qt_add_qml_module(deadclock
+#     URI Application
+#     VERSION 1.0
+#     QML_FILES
+#         src/ui/MainWindow.qml
+#         src/ui/OverlayWindow.qml
+# )
+
 qt_add_qml_module(deadclock
-    URI Application
+    URI Deadclock.Ui
     VERSION 1.0
-    QML_FILES src/ui/MainWindow.qml src/ui/OverlayWindow.qml
+    QML_FILES
+        src/ui/components/DCButton.qml
 )
 
 qt_add_resources(deadclock "ui"

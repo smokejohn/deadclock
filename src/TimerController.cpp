@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "TimerController.h"
+#include "SettingsManager.h"
 #include <tesseract/baseapi.h>
 
 TimerController::TimerController(SettingsManager* settings_manager, QObject* parent)
@@ -13,6 +14,7 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
     timer->setInterval(1000);
 
     connect(clock_reader, &ClockReader::time_read, this, &TimerController::update_time_external);
+    connect(settings_manager, &SettingsManager::settings_changed, this, &TimerController::update_settings);
 
     enabled_events.set();
 }
@@ -147,4 +149,12 @@ void TimerController::manage_timers()
 bool TimerController::event_enabled(EventType type)
 {
     return enabled_events.test(static_cast<std::size_t>(type));
+}
+
+void TimerController::update_settings()
+{
+    auto event_mask = settings_manager->load_setting("timer/enabled_events").toString();
+    // reverse order as std::bitset indexes from the right to the left;
+    std::reverse(event_mask.begin(), event_mask.end());
+    enabled_events = std::bitset<6>(event_mask.toStdString());
 }

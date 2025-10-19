@@ -5,6 +5,7 @@
 #include <QTimer>
 
 #include <bitset>
+#include <qobject.h>
 
 #include "SettingsManager.h"
 #include "ClockReader.h"
@@ -42,6 +43,7 @@ public slots:
 
 private slots:
     void update_time();
+    void update_settings();
 
 private:
     void manage_timers();

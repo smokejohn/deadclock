@@ -59,7 +59,7 @@ void NotificationManager::flush_aggregated_messages()
 
     QString final_message {"In " + QString::number(lead_time) + " seconds:"};
     for (const auto& message : aggregated_events) {
-        final_message += "\n - " + message;
+        final_message += "\n • " + message;
     }
     update_message(final_message);
 
