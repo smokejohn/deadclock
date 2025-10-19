@@ -2,7 +2,7 @@
 
 An app to help you remember critical timings in valve's DeadLock game.
 
-![Screenshot of the DeadClock GUI](img/deadclock_ui.png)
+<img src="https://github.com/smokejohn/deadclock/blob/master/img/deadclock_ui.png" width="300">
 
 ## Features
 
