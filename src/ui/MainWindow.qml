@@ -21,11 +21,11 @@ ApplicationWindow {
     property int spacing: 16
     property int spacing_small: 8
     property int spacing_tiny: 4
-    // property color accent_color: Qt.color("#61d38e")
-    // property color accent_color: Qt.color("#49a06b")
-    // property color accent_color: Qt.color("#3f8a5c")
+    // Qt.color("#61d38e")
+    // Qt.color("#49a06b")
+    // Qt.color("#3f8a5c")
+    // Qt.color("#2c6344")
     property color accent_color: Qt.color("#298753")
-    // property color accent_color: Qt.color("#2c6344")
 
     Component.onCompleted: {
         // Load Settings from disk

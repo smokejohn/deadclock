@@ -1,8 +1,7 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Shapes 1.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Item {
     id: root
@@ -28,9 +27,6 @@ Item {
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY
-
-        Material.theme: Material.Dark
-        Material.accent: Material.Blue
 
         Component.onCompleted: {
             // Load Settings from disk
@@ -134,9 +130,6 @@ Item {
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width / 2 - width / 2
         y: Qt.application.screens[0].virtualY + 200
-
-        Material.theme: Material.Dark
-        Material.accent: Material.Blue
 
         Component.onCompleted: {
             // Load Settings from disk
@@ -287,6 +280,37 @@ Item {
                     maximumLineCount: -1
                 }
             }
+        }
+    }
+
+    Window {
+        id: minimap_overlay
+        title: "Minimap Overlay"
+        objectName: "minimap_overlay"
+        visible: true
+        color: Qt.color("transparent")
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
+
+        property int size: 400
+        property real x_pos_percentage: 0.78
+        property real y_pos_percentage: 0.66
+
+        width: size
+        height: size
+        x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width * x_pos_percentage
+        y: Qt.application.screens[0].virtualY + Qt.application.screens[0].height * y_pos_percentage
+
+        Rectangle {
+            id: minimap_circle
+            // anchors.centerIn: parent
+            anchors.fill: parent
+            // height: parent.height
+            // width: parent.width
+            // radius: minimap_overlay.size / 2
+            // color: Qt.rgba(1.0, 1.0, 1.0, 0.4)
+            color: Qt.color("transparent")
+            border.color: Qt.color("white")
+            border.width: 1
         }
     }
 }
