@@ -37,14 +37,6 @@ set(SOURCES
 
 qt_add_executable(deadclock ${SOURCES})
 
-# qt_add_qml_module(deadclock
-#     URI Application
-#     VERSION 1.0
-#     QML_FILES
-#         src/ui/MainWindow.qml
-#         src/ui/OverlayWindow.qml
-# )
-
 qt_add_qml_module(deadclock
     URI Deadclock.Ui
     VERSION 1.0
@@ -66,6 +58,7 @@ qt_add_resources(deadclock "images"
     FILES
         resources/images/deadclock_icon.ico
         resources/images/deadclock_icon.png
+        resources/images/minimap_highlight.png
 )
 
 qt_add_resources(deadclock "fonts"

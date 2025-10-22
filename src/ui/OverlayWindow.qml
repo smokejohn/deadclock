@@ -14,6 +14,10 @@ Item {
         function onOverlay_locked(locked) {
             overlay_locked = locked;
         }
+
+        function onHighlight_minimap() {
+            minimap_highlight.flash()
+        }
     }
 
     Window {
@@ -291,26 +295,45 @@ Item {
         color: Qt.color("transparent")
         flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
 
-        property int size: 400
-        property real x_pos_percentage: 0.78
-        property real y_pos_percentage: 0.66
+        property real width_percentage: 0.1981 // 507 out of 2560
+        property real x_pos_percentage: 0.7860 // 2012 out of 2560
+        property real y_pos_percentage: 0.6063 // 873 out of 1440
 
-        width: size
-        height: size
+        width: Qt.application.screens[0].width * width_percentage
+        height: width
         x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width * x_pos_percentage
         y: Qt.application.screens[0].virtualY + Qt.application.screens[0].height * y_pos_percentage
 
         Rectangle {
-            id: minimap_circle
-            // anchors.centerIn: parent
+            id: minimap_bounds
             anchors.fill: parent
-            // height: parent.height
-            // width: parent.width
-            // radius: minimap_overlay.size / 2
-            // color: Qt.rgba(1.0, 1.0, 1.0, 0.4)
+            visible: false
             color: Qt.color("transparent")
             border.color: Qt.color("white")
             border.width: 1
+        }
+
+        Image {
+            id: minimap_highlight
+            anchors.fill: parent
+            visible: false
+            source: "qrc:/images/minimap_highlight.png"
+
+            SequentialAnimation {
+                id: flash_animation
+                running: false
+                onStopped: minimap_highlight.visible = false
+
+                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 1.0; duration: 150 }
+                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 0.0; duration: 150 }
+                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 1.0; duration: 150 }
+                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 0.0; duration: 150 }
+            }
+
+            function flash() {
+                minimap_highlight.visible = true
+                flash_animation.start()
+            }
         }
     }
 }

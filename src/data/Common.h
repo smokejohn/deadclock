@@ -7,7 +7,8 @@ enum class EventType
     large_camps,
     mid_boss,
     runes,
-    urn
+    urn,
+    minimap_drill,
 };
 
 enum class KeyBind

@@ -46,6 +46,8 @@ void NotificationManager::handle_event(EventType type)
         case EventType::urn:
             message = "Urn spawns";
             break;
+        case EventType::minimap_drill:
+            break;
         default:
             qDebug() << "Unknown Event Type";
             break;

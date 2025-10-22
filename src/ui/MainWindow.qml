@@ -208,7 +208,7 @@ ApplicationWindow {
                 }
                 Label {
                     text: "Lead time (seconds)"
-                    ToolTip.text: "Set how many seconds in advance you’ll be alerted before the event begins."
+                    // ToolTip.text: "Set how many seconds in advance you’ll be alerted before the event begins."
                 }
                 Slider {
                     id: lead_time_slider
@@ -263,11 +263,11 @@ ApplicationWindow {
                     onClicked: input.toggle_set_keybind_active()
                 }
                 Label {
-                    text: "Alerts"
+                    text: "Alerts / Drills"
                 }
                 DCButton {
                     id: alert_popup_button
-                    text: "Configure Alerts"
+                    text: "Configure Alerts / Drills"
                     onClicked: alert_popup.open()
                 }
             }
@@ -324,7 +324,7 @@ ApplicationWindow {
 
             function set_switch_states(bitmask_string) {
                 console.log("setting switch states with: ", bitmask_string);
-                if (bitmask_string.length !== 6) {
+                if (bitmask_string.length !== 7) {
                     console.warn("invalid input length for enabled event bitmask string");
                     return;
                 }
@@ -334,9 +334,11 @@ ApplicationWindow {
                 midboss_switch.checked = bitmask_string.charAt(3) === "1";
                 runes_switch.checked = bitmask_string.charAt(4) === "1";
                 urn_switch.checked = bitmask_string.charAt(5) === "1";
+                minimap_drill_switch.checked = bitmask_string.charAt(6) === "1";
             }
             Component.onCompleted: {
                 set_switch_states(settings.load_setting("timer/enabled_events"));
+                minimap_drill_interval.value = settings.load_setting("timer/minimap_drill_interval");
             }
 
             Material.theme: Material.Dark
@@ -376,12 +378,40 @@ ApplicationWindow {
                     id: urn_switch
                     text: "Urn"
                 }
+                Switch {
+                    id: minimap_drill_switch
+                    text: "Minimap Drill"
+                }
+                Label {
+                    text: "Minimap flash interval (seconds)"
+                    enabled: minimap_drill_switch.checked
+                    // ToolTip.text: "How many seconds to wait inbetween flashing the minimap"
+                }
+                Slider {
+                    id: minimap_drill_interval
+                    from: 15
+                    to: 180
+                    stepSize: 5
+                    value: 60
+                    width: parent.width
+                    enabled: minimap_drill_switch.checked
+
+                    ToolTip.visible: hovered || pressed
+                    ToolTip.text: value.toFixed(0)
+
+                    onPressedChanged: {
+                        if (!pressed) {
+                            settings.save_setting("timer/minimap_drill_interval", value);
+                        }
+                    }
+                }
+
                 DCButton {
                     text: "Apply"
                     highlighted: true
                     onClicked: {
                         // set current state in settings and adjust bitset in timercontroller
-                        let bitmask_string = (small_camps_switch.checked ? "1" : "0") + (medium_camps_switch.checked ? "1" : "0") + (large_camps_switch.checked ? "1" : "0") + (midboss_switch.checked ? "1" : "0") + (runes_switch.checked ? "1" : "0") + (urn_switch.checked ? "1" : "0");
+                        let bitmask_string = (small_camps_switch.checked ? "1" : "0") + (medium_camps_switch.checked ? "1" : "0") + (large_camps_switch.checked ? "1" : "0") + (midboss_switch.checked ? "1" : "0") + (runes_switch.checked ? "1" : "0") + (urn_switch.checked ? "1" : "0") + (minimap_drill_switch.checked ? "1" : "0");
                         console.log("Saving event mask: ", bitmask_string);
                         settings.save_setting("timer/enabled_events", bitmask_string);
                         alert_popup.close();

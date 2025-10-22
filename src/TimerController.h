@@ -57,5 +57,5 @@ private:
     ClockReader* clock_reader;
     unsigned int elapsed_seconds { 0 };
     QPointer<SettingsManager> settings_manager { nullptr };
-    std::bitset<6> enabled_events;
+    std::bitset<7> enabled_events;
 };

@@ -62,6 +62,8 @@ void TTSManager::handle_event(EventType type)
         case EventType::urn:
             speech->say("Urn spawns in " + QString::number(lead_time) + " seconds");
             break;
+        case EventType::minimap_drill:
+            break;
         default:
             qDebug() << "Unknown Event Type";
             break;

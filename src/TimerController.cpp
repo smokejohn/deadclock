@@ -1,7 +1,7 @@
 #include <QDebug>
 
-#include "TimerController.h"
 #include "SettingsManager.h"
+#include "TimerController.h"
 #include <tesseract/baseapi.h>
 
 TimerController::TimerController(SettingsManager* settings_manager, QObject* parent)
@@ -106,6 +106,7 @@ void TimerController::manage_timers()
     static const int spawn_time_mid_boss { 600 };
     int spawn_time_urn { 600 };
     const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
+    const int minimap_drill_interval = settings_manager->load_setting("timer/minimap_drill_interval").toInt();
 
     // One time events
 
@@ -144,6 +145,12 @@ void TimerController::manage_timers()
     if (event_enabled(EventType::urn) && elapsed_seconds % spawn_time_urn == spawn_time_urn - lead_time) {
         emit event_occured(EventType::urn);
     }
+
+    // Drills
+    if (event_enabled(EventType::minimap_drill) && elapsed_seconds != 0 &&
+        elapsed_seconds % minimap_drill_interval == 0) {
+        emit event_occured(EventType::minimap_drill);
+    }
 }
 
 bool TimerController::event_enabled(EventType type)
@@ -156,5 +163,5 @@ void TimerController::update_settings()
     auto event_mask = settings_manager->load_setting("timer/enabled_events").toString();
     // reverse order as std::bitset indexes from the right to the left;
     std::reverse(event_mask.begin(), event_mask.end());
-    enabled_events = std::bitset<6>(event_mask.toStdString());
+    enabled_events = std::bitset<7>(event_mask.toStdString());
 }

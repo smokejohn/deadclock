@@ -24,7 +24,8 @@ private:
     std::map<QString, QVariant> defaults { { "speech/volume", { 50 } },
                                            { "speech/voice", { 0 } },
                                            { "timer/lead_time", { 20 } },
-                                           { "timer/enabled_events", { "111111" } },
+                                           { "timer/enabled_events", { "1111110" } },
+                                           { "timer/minimap_drill_interval", 60 },
                                            { "input/pause_key", { 26 } },
                                            { "input/set_key", { 27 } } };
 };

@@ -41,6 +41,7 @@ Application::Application(QObject* parent)
 #endif
 
     connect(timer_controller, &TimerController::event_occured, tts_manager, &TTSManager::handle_event);
+    connect(timer_controller, &TimerController::event_occured, this, &Application::handle_event);
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
 
     toggle_overlay_locked(true);
@@ -49,6 +50,13 @@ Application::Application(QObject* parent)
 
 Application::~Application()
 {
+}
+
+void Application::handle_event(EventType type)
+{
+    if (type == EventType::minimap_drill) {
+        emit highlight_minimap();
+    }
 }
 
 void Application::toggle_overlay_locked(bool lock)

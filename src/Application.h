@@ -26,9 +26,11 @@ public:
 
 signals:
     void overlay_locked(bool locked);
+    void highlight_minimap();
 
 private slots:
     void handle_keybind_pressed(KeyBind keybind);
+    void handle_event(EventType type);
 
 private:
     QQmlApplicationEngine engine;
