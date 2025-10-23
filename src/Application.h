@@ -22,7 +22,6 @@ public:
 
     Q_INVOKABLE void toggle_overlay_visible(bool visible);
     Q_INVOKABLE void toggle_overlay_locked(bool lock);
-    Q_INVOKABLE void toggle_notifications(bool show);
 
 signals:
     void overlay_locked(bool locked);

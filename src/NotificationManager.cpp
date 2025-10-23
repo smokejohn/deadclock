@@ -10,6 +10,9 @@ NotificationManager::NotificationManager(SettingsManager* settings_manager, QObj
     aggregation_timer->setInterval(250);
 
     connect(aggregation_timer, &QTimer::timeout, this, &NotificationManager::flush_aggregated_messages);
+    connect(settings_manager, &SettingsManager::settings_changed, this, &NotificationManager::update_settings);
+
+    update_settings();
 }
 
 void NotificationManager::update_message(const QString& new_message)
@@ -19,8 +22,17 @@ void NotificationManager::update_message(const QString& new_message)
     emit message_changed();
 }
 
+void NotificationManager::update_settings()
+{
+    show_notifications = settings_manager->load_setting("notification/show").toBool();
+}
+
 void NotificationManager::handle_event(EventType type)
 {
+    if (!show_notifications || type == EventType::minimap_drill) {
+        return;
+    }
+
     qDebug() << "NotificationManager::handle_event called";
     if (!aggregation_timer->isActive()) {
         aggregation_timer->start();
@@ -57,9 +69,13 @@ void NotificationManager::handle_event(EventType type)
 
 void NotificationManager::flush_aggregated_messages()
 {
+    if (aggregated_events.empty()) {
+        return;
+    }
+
     const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
 
-    QString final_message {"In " + QString::number(lead_time) + " seconds:"};
+    QString final_message { "In " + QString::number(lead_time) + " seconds:" };
     for (const auto& message : aggregated_events) {
         final_message += "\n • " + message;
     }

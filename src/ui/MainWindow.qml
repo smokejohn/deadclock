@@ -283,6 +283,7 @@ ApplicationWindow {
                 Switch {
                     id: overlay_toggle_visible
                     text: "Show Overlay"
+                    checked: false
                     width: parent.width
 
                     onCheckedChanged: {
@@ -304,11 +305,12 @@ ApplicationWindow {
                     id: overlay_show_notifications
                     text: "Show Notifications"
                     enabled: overlay_toggle_visible.checked
-                    checked: false
+                    checked: settings.load_setting("notification/show") === "true" ? true : false
                     width: parent.width
 
-                    onCheckedChanged: {
-                        application.toggle_notifications(checked);
+                    onToggled: {
+                        console.log("notification switch toggled");
+                        settings.save_setting("notification/show", checked);
                     }
                 }
             }
@@ -382,10 +384,18 @@ ApplicationWindow {
                     id: minimap_drill_switch
                     text: "Minimap Drill"
                 }
-                Label {
-                    text: "Minimap flash interval (seconds)"
-                    enabled: minimap_drill_switch.checked
-                    // ToolTip.text: "How many seconds to wait inbetween flashing the minimap"
+                Item {
+                    width: parent.width
+                    height: minimap_drill_label.implicitHeight
+                    Label {
+                        id: minimap_drill_label
+                        text: "Highlight interval (seconds)"
+                        enabled: minimap_drill_switch.checked
+                        anchors.left: parent.left
+                        anchors.leftMargin: main_window.spacing_small
+                        anchors.verticalCenter: parent.bottom
+                        // ToolTip.text: "How many seconds to wait inbetween highlighting the minimap"
+                    }
                 }
                 Slider {
                     id: minimap_drill_interval

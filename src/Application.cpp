@@ -41,11 +41,13 @@ Application::Application(QObject* parent)
 #endif
 
     connect(timer_controller, &TimerController::event_occured, tts_manager, &TTSManager::handle_event);
+    connect(
+        timer_controller, &TimerController::event_occured, notification_manager, &NotificationManager::handle_event);
     connect(timer_controller, &TimerController::event_occured, this, &Application::handle_event);
+
     connect(input_manager, &InputManager::keybind_pressed, this, &Application::handle_keybind_pressed);
 
     toggle_overlay_locked(true);
-    toggle_notifications(false);
 }
 
 Application::~Application()
@@ -87,21 +89,6 @@ void Application::toggle_overlay_visible(bool visible)
         timer_overlay->hide();
         notification_overlay->hide();
         minimap_overlay->hide();
-    }
-}
-
-void Application::toggle_notifications(bool show)
-{
-    if (show) {
-        connect(timer_controller,
-                &TimerController::event_occured,
-                notification_manager,
-                &NotificationManager::handle_event);
-    } else {
-        disconnect(timer_controller,
-                   &TimerController::event_occured,
-                   notification_manager,
-                   &NotificationManager::handle_event);
     }
 }
 

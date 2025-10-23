@@ -30,11 +30,13 @@ public slots:
 
 private slots:
     void flush_aggregated_messages();
+    void update_settings();
 
 private:
     QString message;
     unsigned int fade_time {1000};
     unsigned int clear_time {5000};
+    bool show_notifications {false};
 
     QStringList aggregated_events;
     QTimer* aggregation_timer;

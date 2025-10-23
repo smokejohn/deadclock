@@ -27,5 +27,6 @@ private:
                                            { "timer/enabled_events", { "1111110" } },
                                            { "timer/minimap_drill_interval", 60 },
                                            { "input/pause_key", { 26 } },
-                                           { "input/set_key", { 27 } } };
+                                           { "input/set_key", { 27 } },
+                                           { "notification/show", { false } } };
 };
