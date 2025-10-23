@@ -173,6 +173,6 @@ QPair<int, int> ClockReader::parse_text_to_time(const QString& ocr_input)
         return qMakePair(minutes, seconds);
     }
 
-    qDebug() << "Could not get a regex match";
+    qDebug() << "Could not get a regex match on source: " << ocr_input;
     return qMakePair(-1, -1);
 }
