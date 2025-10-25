@@ -42,6 +42,7 @@ qt_add_qml_module(deadclock
     VERSION 1.0
     QML_FILES
         src/ui/components/DCButton.qml
+        src/ui/components/TimerBar.qml
 )
 
 qt_add_resources(deadclock "ui"
