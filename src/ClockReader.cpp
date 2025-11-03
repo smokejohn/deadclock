@@ -111,7 +111,7 @@ void ClockReader::capture_region()
     QScreen* screen = QGuiApplication::primaryScreen();
 
     if (!screen) {
-        qDebug() << "Cannot get screen";
+        qDebug() << "Could not get primary screen";
         return;
     }
 

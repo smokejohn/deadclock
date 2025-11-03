@@ -18,6 +18,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     TextToSpeech
 )
 find_package(PkgConfig REQUIRED)
+find_package(OpenCV REQUIRED)
 pkg_check_modules(TESSERACT REQUIRED tesseract)
 pkg_check_modules(LEPTONICA REQUIRED lept)
 
@@ -84,6 +85,7 @@ target_include_directories(deadclock PRIVATE
     src
     ${TESSERACT_INCLUDE_DIRS}
     ${LEPTONICA_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 target_link_directories(deadclock PRIVATE
@@ -103,6 +105,7 @@ target_link_libraries(deadclock PRIVATE
     uiohook
     tesseract
     leptonica
+    ${OpenCV_LIBS}
 )
 
 if(WIN32)
@@ -131,3 +134,6 @@ install(SCRIPT ${deploy_script})
 install(FILES "${ocr_data_path}"
         DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
+
+set(MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+add_subdirectory(test/computer_vision)
