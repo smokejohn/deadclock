@@ -1,3 +1,8 @@
+/**
+ * @file InputManager.h
+ * @brief Manages the global keyhook and keybindings for specific functions
+ */
+
 #pragma once
 
 #include <QObject>

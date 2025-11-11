@@ -1,3 +1,8 @@
+/**
+ * @file SettingsManager.h
+ * @brief Writes and loads settings via QSettings from an .ini file
+ */
+
 #pragma once
 
 #include <QObject>

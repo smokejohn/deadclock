@@ -10,10 +10,17 @@
 #include <opencv2/imgproc.hpp>
 
 // percentages of full frame measured on 2560x1440
+// Rejuvenator buff icon regions for team and enemy
 constexpr auto REJUV_SCAN_REGION_TEAM_X { 0.4464 };  // 1143 / 2560
 constexpr auto REJUV_SCAN_REGION_ENEMY_X { 0.5140 }; // 1316 / 2560
 constexpr auto REJUV_SCAN_REGION_Y { 0.0278 };       // 40 / 1440
 constexpr auto REJUV_SCAN_REGION_SIZE { 0.0390 };    // 100 / 2560
+
+// ESC icon when shop or game menu is opened
+constexpr auto ESC_ICON_REGION_X { 0.0074 };      // 19 / 2560
+constexpr auto ESC_ICON_REGION_Y { 0.9611 };      // 1384 / 1440
+constexpr auto ESC_ICON_REGION_WIDTH { 0.0289 };  // 72 / 2560
+constexpr auto ESC_ICON_REGION_HEIGHT { 0.0263 }; // 38 / 1440
 
 CVManager::CVManager(QObject* parent)
     : QObject(parent)
@@ -28,20 +35,18 @@ std::pair<int, double> CVManager::find_matches_contour(const cv::Mat& template_i
                                                        const cv::Mat& target_img,
                                                        cv::OutputArray result)
 {
+    if (template_img.empty() || target_img.empty()) {
+        qDebug() << "Template or target image don't contain data -> exiting";
+        return std::make_pair(-1, 1);
+    }
+
     cv::Mat template_processed {};
     cv::Mat target_processed {};
 
-    // Filtering by color range to get mask
-    // testing shows some good values are:
-    cv::Scalar lower_bound(21, 80, 80);
-    cv::Scalar upper_bound(25, 175, 255);
-    mask_from_color_range(template_img, template_processed, lower_bound, upper_bound);
-    mask_from_color_range(target_img, target_processed, lower_bound, upper_bound);
-
     // Blurring
     cv::Size blursize(3, 3);
-    cv::GaussianBlur(template_processed, template_processed, blursize, 0);
-    cv::GaussianBlur(target_processed, target_processed, blursize, 0);
+    cv::GaussianBlur(template_img, template_processed, blursize, 0);
+    cv::GaussianBlur(target_img, target_processed, blursize, 0);
 
     // Edge detect
     cv::Canny(template_processed, template_processed, 100, 200);
@@ -52,7 +57,6 @@ std::pair<int, double> CVManager::find_matches_contour(const cv::Mat& template_i
     cv::findContours(template_processed, template_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
     std::vector<std::vector<cv::Point>> target_contours {};
     cv::findContours(target_processed, target_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
 
     // Match Contours
     cv::Mat out { cv::Mat::zeros(target_img.size(), CV_8UC3) };
@@ -67,12 +71,12 @@ std::pair<int, double> CVManager::find_matches_contour(const cv::Mat& template_i
             if (match_value < best_match) {
                 best_match = match_value;
             }
-        } else {
-            // cv::drawContours(out, target_contours, i, cv::Scalar(127, 127, 127), 1);
         }
     }
 
-    result.assign(out);
+    if (!result.empty()) {
+        result.assign(out);
+    }
     return std::make_pair(num_matches, best_match);
 }
 
@@ -81,6 +85,11 @@ void CVManager::mask_from_color_range(const cv::Mat& input_img,
                                       cv::Scalar lower_bound,
                                       cv::Scalar upper_bound)
 {
+    if (input_img.empty()) {
+        qDebug() << "Input image empty -> exiting";
+        return;
+    }
+
     cv::Mat input_processed;
     cv::cvtColor(input_img, input_processed, cv::COLOR_BGR2HLS);
 
@@ -89,20 +98,75 @@ void CVManager::mask_from_color_range(const cv::Mat& input_img,
     result.assign(input_processed);
 }
 
-void CVManager::detect_rejuv_buff()
+bool CVManager::is_shop_open()
+{
+    QScreen* screen = QGuiApplication::primaryScreen();
+
+    if (!screen) {
+        qDebug() << " Could not get primary screen";
+        return false;
+    }
+
+    int region_x_pos = static_cast<int>(ESC_ICON_REGION_X * static_cast<double>(screen->geometry().width()) + 0.5);
+    int region_y_pos = static_cast<int>(ESC_ICON_REGION_Y * static_cast<double>(screen->geometry().height()) + 0.5);
+    int region_width = static_cast<int>(ESC_ICON_REGION_WIDTH * static_cast<double>(screen->geometry().width()) + 0.5);
+    int region_height =
+        static_cast<int>(ESC_ICON_REGION_HEIGHT * static_cast<double>(screen->geometry().height()) + 0.5);
+
+    esc_icon_capture_rect.setRect(region_x_pos, region_y_pos, region_width, region_height);
+
+    QPixmap esc_icon_roi = screen->grabWindow(0,
+                                              esc_icon_capture_rect.left(),
+                                              esc_icon_capture_rect.top(),
+                                              esc_icon_capture_rect.width(),
+                                              esc_icon_capture_rect.height());
+
+    QImage esc_icon_template_image = QImage(":/images/opencv/dl_esc_icon.png");
+    cv::Mat esc_icon_template = qimage_to_cv_mat(esc_icon_template_image);
+    cv::Mat esc_icon_target = qimage_to_cv_mat(esc_icon_roi.toImage());
+
+    mask_from_brightest(esc_icon_template, esc_icon_template, 0.90);
+    mask_from_brightest(esc_icon_target, esc_icon_target, 0.90);
+
+    auto [matches, accuracy] = find_matches_contour(esc_icon_template, esc_icon_target);
+
+    return matches != 0;
+}
+
+void CVManager::mask_from_brightest(const cv::Mat& input_img, cv::OutputArray result, double threshold_mult)
+{
+    if (input_img.empty()) {
+        qDebug() << "Input image empty -> exiting";
+        return;
+    }
+
+    cv::Mat processed_input {};
+    cv::cvtColor(input_img, processed_input, cv::COLOR_BGR2GRAY);
+
+    double min {};
+    double max {};
+    cv::minMaxLoc(processed_input, &min, &max);
+
+    cv::threshold(processed_input, processed_input, max * threshold_mult, 255, cv::THRESH_BINARY);
+
+    auto out = cv::Mat::zeros(input_img.size(), CV_8UC3);
+    result.assign(processed_input);
+}
+
+std::pair<int, int> CVManager::detect_rejuv_buff()
 {
     QScreen* screen = QGuiApplication::primaryScreen();
 
     if (!screen) {
         qDebug() << "Could not get primary screen";
-        return;
+        return std::make_pair(-1, -1);
     }
 
     int x_pos_team = static_cast<int>(REJUV_SCAN_REGION_TEAM_X * static_cast<double>(screen->geometry().width()) + 0.5);
     int x_pos_enemy =
         static_cast<int>(REJUV_SCAN_REGION_ENEMY_X * static_cast<double>(screen->geometry().width()) + 0.5);
-    int y_pos = static_cast<int>(REJUV_SCAN_REGION_Y * static_cast<double>(screen->geometry().width()) + 0.5);
-    int size = static_cast<int>(REJUV_SCAN_REGION_SIZE * static_cast<double>(screen->geometry().height()) + 0.5);
+    int y_pos = static_cast<int>(REJUV_SCAN_REGION_Y * static_cast<double>(screen->geometry().height()) + 0.5);
+    int size = static_cast<int>(REJUV_SCAN_REGION_SIZE * static_cast<double>(screen->geometry().width()) + 0.5);
 
     rejuv_team_capture_rect.setRect(x_pos_team, y_pos, size, size);
     rejuv_enemy_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
@@ -114,12 +178,12 @@ void CVManager::detect_rejuv_buff()
                                                 rejuv_team_capture_rect.height());
 
     QPixmap rejuv_enemy_roi = screen->grabWindow(0,
-                                                 rejuv_team_capture_rect.left(),
-                                                 rejuv_team_capture_rect.top(),
-                                                 rejuv_team_capture_rect.width(),
-                                                 rejuv_team_capture_rect.height());
+                                                 rejuv_enemy_capture_rect.left(),
+                                                 rejuv_enemy_capture_rect.top(),
+                                                 rejuv_enemy_capture_rect.width(),
+                                                 rejuv_enemy_capture_rect.height());
 
-    QImage rejuv_icon_image = QImage("qrc:/resources/images/rejuv_icon.png");
+    QImage rejuv_icon_image = QImage(":/images/opencv/dl_rejuv_icon.png");
     cv::Mat target_region_team = qimage_to_cv_mat(rejuv_team_roi.toImage());
     cv::Mat target_region_enemy = qimage_to_cv_mat(rejuv_enemy_roi.toImage());
     cv::Mat rejuv_template = qimage_to_cv_mat(rejuv_icon_image);
@@ -132,8 +196,10 @@ void CVManager::detect_rejuv_buff()
     mask_from_color_range(target_region_team, target_region_team, lower_bound, upper_bound);
     mask_from_color_range(target_region_enemy, target_region_enemy, lower_bound, upper_bound);
 
-    auto matches_team = find_matches_contour(rejuv_template, target_region_team);
-    auto matches_enemy = find_matches_contour(rejuv_template, target_region_enemy);
+    auto [matches_team, accuracy_team] = find_matches_contour(rejuv_template, target_region_team);
+    auto [matches_enemy, accuracy_enemy] = find_matches_contour(rejuv_template, target_region_enemy);
+
+    return std::make_pair(matches_team, matches_enemy);
 }
 
 cv::Mat CVManager::qimage_to_cv_mat(const QImage& input, bool clone_data)

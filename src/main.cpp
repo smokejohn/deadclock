@@ -17,10 +17,6 @@ int main(int argc, char* argv[])
     //   qDebug() << it.next();
     // }
 
-    // auto regular_font_id = QFontDatabase::addApplicationFont(":/fonts/OpenSans-Regular.ttf");
-    // auto semibold_font_id = QFontDatabase::addApplicationFont(":/fonts/OpenSans-SemiBold.ttf");
-    // auto regular_font_id = QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular.ttf");
-    // auto semibold_font_id = QFontDatabase::addApplicationFont(":/fonts/Roboto-SemiBold.ttf");
     auto regular_font_id = QFontDatabase::addApplicationFont(":/fonts/Lato-Regular.ttf");
     auto semibold_font_id = QFontDatabase::addApplicationFont(":/fonts/Lato-Bold.ttf");
     QString regular_font = QFontDatabase::applicationFontFamilies(regular_font_id).at(0);

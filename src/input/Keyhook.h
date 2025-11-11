@@ -1,3 +1,8 @@
+/**
+ * @file Keyhook.h
+ * @brief Wrapper around uiohook library to listen for keypresses globally without having application focus
+ */
+
 #pragma once
 
 #include <uiohook.h>

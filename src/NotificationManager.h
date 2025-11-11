@@ -1,3 +1,8 @@
+/**
+ * @file NotificationManager.h
+ * @brief Manages display of on screen notifications on alerts
+ */
+
 #pragma once
 
 #include <QObject>

@@ -1,3 +1,8 @@
+/**
+ * @file CVManager.h
+ * @brief Wrapper around openCV which scans game UI for different info
+ */
+
 #pragma once
 
 #include <QObject>
@@ -10,7 +15,11 @@ class CVManager : public QObject
     Q_OBJECT
 
 public:
-    void detect_rejuv_buff();
+    explicit CVManager(QObject* parent = nullptr);
+    ~CVManager();
+
+    std::pair<int, int> detect_rejuv_buff();
+    bool is_shop_open();
 
     /**
      * @brief find matching contours from template in target
@@ -26,6 +35,7 @@ public:
     std::pair<int, double> find_matches_contour(const cv::Mat& template_img,
                                                 const cv::Mat& target_img,
                                                 cv::OutputArray result = cv::noArray());
+
     /**
      * @brief Creates a bitmask from an input image in the given color range
      *
@@ -39,16 +49,22 @@ public:
                                cv::Scalar lower_bound,
                                cv::Scalar upper_bound);
 
+    /**
+     * @brief Creates a bitmask from an input image by selecting the brigthest pixel
+     *
+     * @param input_img input image
+     * @param result the resulting bitmask
+     * @param threshold_mult a multiplier for the thresholding operations lower bound (the brightest detected pixel) allows scaling from black 0.0 to brightest pixel 1.0
+     */
+    void mask_from_brightest(const cv::Mat& input_img, cv::OutputArray result, double threshold_mult = 0.95);
+
     cv::Mat qimage_to_cv_mat(const QImage& input, bool clone_data = true);
     QImage cv_mat_to_qimage(const cv::Mat& input);
-
-public:
-    explicit CVManager(QObject* parent = nullptr);
-    ~CVManager();
 
 private:
     cv::Mat alpha_to_mask(const cv::Mat& input);
 
     QRect rejuv_team_capture_rect;
     QRect rejuv_enemy_capture_rect;
+    QRect esc_icon_capture_rect;
 };

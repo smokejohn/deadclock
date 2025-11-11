@@ -1,10 +1,15 @@
+/**
+ * @file Application.h
+ * @brief Main class handling communication between the backend classes and the QML UI
+ */
+
 #pragma once
 
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QQuickView>
 
-#include "InputManager.h"
+#include "input/InputManager.h"
 #include "NotificationManager.h"
 #include "SettingsManager.h"
 #include "TTSManager.h"

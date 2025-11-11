@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "SettingsManager.h"
+#include "gamestate/GameStateTracker.h"
 #include "TimerController.h"
 #include <tesseract/baseapi.h>
 
@@ -8,12 +9,12 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
     : QObject(parent)
     , timer(new QTimer(this))
     , settings_manager(settings_manager)
-    , clock_reader(new ClockReader(this))
+    , gamestate_tracker(new GameStateTracker(this))
 {
     connect(timer, &QTimer::timeout, this, &TimerController::update_time);
     timer->setInterval(1000);
 
-    connect(clock_reader, &ClockReader::time_read, this, &TimerController::update_time_external);
+    connect(gamestate_tracker, &GameStateTracker::time_read, this, &TimerController::update_time_external);
     connect(settings_manager, &SettingsManager::settings_changed, this, &TimerController::update_settings);
 
     enabled_events.set();
@@ -22,14 +23,14 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
 void TimerController::start()
 {
     timer->start();
-    clock_reader->start_reading();
+    gamestate_tracker->start_tracking();
     emit running_changed();
 }
 
 void TimerController::pause()
 {
     timer->stop();
-    clock_reader->stop_reading();
+    gamestate_tracker->stop_tracking();
     emit running_changed();
 }
 
@@ -74,14 +75,13 @@ void TimerController::update_time()
     emit time_changed();
 }
 
-void TimerController::update_time_external(int minutes, int seconds)
+void TimerController::update_time_external(int seconds)
 {
-    if (minutes == -1 || seconds == -1) {
+    if (seconds == -1) {
         return;
     }
 
-    int input_time = minutes * 60 + seconds;
-    elapsed_seconds = input_time;
+    elapsed_seconds = seconds;
     emit time_changed();
 }
 

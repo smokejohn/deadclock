@@ -1,3 +1,8 @@
+/**
+ * @file TTSManager.h
+ * @brief TextToSpeech wrapper that configures QTextToSpeech
+ */
+
 #pragma once
 
 #include <QObject>

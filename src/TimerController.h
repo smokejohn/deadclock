@@ -1,3 +1,8 @@
+/**
+ * @file TimerController.h
+ * @brief Core Class that controls the main timer and emits alerts
+ */
+
 #pragma once
 
 #include <QObject>
@@ -8,7 +13,8 @@
 #include <qobject.h>
 
 #include "SettingsManager.h"
-#include "ClockReader.h"
+#include "gamestate/GameStateTracker.h"
+#include "gamestate/OCRManager.h"
 #include "data/Common.h"
 
 class TimerController : public QObject
@@ -39,7 +45,7 @@ signals:
     void event_occured(EventType type);
 
 public slots:
-    void update_time_external(int minutes, int seconds);
+    void update_time_external(int seconds);
 
 private slots:
     void update_time();
@@ -47,15 +53,15 @@ private slots:
 
 private:
     void manage_timers();
-
-    int last_set_minutes { 0 };
-    int last_set_seconds { 20 };
-
     bool event_enabled(EventType type);
 
-    QTimer* timer;
-    ClockReader* clock_reader;
     unsigned int elapsed_seconds { 0 };
-    QPointer<SettingsManager> settings_manager { nullptr };
+    int last_set_minutes { 0 };
+    int last_set_seconds { 20 };
     std::bitset<7> enabled_events;
+
+    QTimer* timer;
+    QPointer<SettingsManager> settings_manager { nullptr };
+    GameStateTracker* gamestate_tracker;
+
 };

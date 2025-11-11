@@ -12,7 +12,7 @@ qt_standard_project_setup(REQUIRES 6.8)
 set(SOURCES
     src/main.cpp
     src/LabeledSlider.cpp
-    ${MAIN_SRC_DIR}/CVManager.cpp
+    ${MAIN_SRC_DIR}/gamestate/CVManager.cpp
 )
 
 qt_add_executable(opencv_test ${SOURCES})

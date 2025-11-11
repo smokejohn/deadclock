@@ -27,13 +27,15 @@ qt_standard_project_setup(REQUIRES 6.8)
 set(SOURCES
     src/main.cpp
     src/Application.cpp
-    src/Keyhook.cpp
-    src/ClockReader.cpp
     src/SettingsManager.cpp
     src/TimerController.cpp
     src/TTSManager.cpp
     src/NotificationManager.cpp
-    src/InputManager.cpp
+    src/input/Keyhook.cpp
+    src/input/InputManager.cpp
+    src/gamestate/GameStateTracker.cpp
+    src/gamestate/OCRManager.cpp
+    src/gamestate/CVManager.cpp
 )
 
 qt_add_executable(deadclock ${SOURCES})
@@ -63,14 +65,18 @@ qt_add_resources(deadclock "images"
         resources/images/minimap_highlight.png
 )
 
+qt_add_resources(deadclock "opencv_images"
+    PREFIX "/images/opencv"
+    BASE "resources/images/opencv"
+    FILES
+        resources/images/opencv/dl_esc_icon.png
+        resources/images/opencv/dl_rejuv_icon.png
+)
+
 qt_add_resources(deadclock "fonts"
     PREFIX "/fonts"
     BASE "resources/fonts"
     FILES
-        resources/fonts/OpenSans-Regular.ttf
-        resources/fonts/OpenSans-SemiBold.ttf
-        resources/fonts/Roboto-Regular.ttf
-        resources/fonts/Roboto-SemiBold.ttf
         resources/fonts/Lato-Regular.ttf
         resources/fonts/Lato-Bold.ttf
 )
