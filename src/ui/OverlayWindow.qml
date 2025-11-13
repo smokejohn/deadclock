@@ -3,6 +3,8 @@ import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts
 import QtQuick.Effects
 
+import Deadclock.Ui 1.0
+
 Item {
     id: root
 
@@ -16,7 +18,7 @@ Item {
         }
 
         function onHighlight_minimap() {
-            minimap_highlight.flash()
+            minimap_highlight.flash();
         }
     }
 
@@ -324,16 +326,70 @@ Item {
                 running: false
                 onStopped: minimap_highlight.visible = false
 
-                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 1.0; duration: 150 }
-                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 0.0; duration: 150 }
-                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 1.0; duration: 150 }
-                NumberAnimation { target: minimap_highlight; property: "opacity"; to: 0.0; duration: 150 }
+                NumberAnimation {
+                    target: minimap_highlight
+                    property: "opacity"
+                    to: 1.0
+                    duration: 150
+                }
+                NumberAnimation {
+                    target: minimap_highlight
+                    property: "opacity"
+                    to: 0.0
+                    duration: 150
+                }
+                NumberAnimation {
+                    target: minimap_highlight
+                    property: "opacity"
+                    to: 1.0
+                    duration: 150
+                }
+                NumberAnimation {
+                    target: minimap_highlight
+                    property: "opacity"
+                    to: 0.0
+                    duration: 150
+                }
             }
 
             function flash() {
-                minimap_highlight.visible = true
-                flash_animation.start()
+                minimap_highlight.visible = true;
+                flash_animation.start();
             }
         }
+    }
+    Window {
+        id: timerbar_overlay
+        title: "timerbar_overlay"
+        objectName: "timerbar_overlay"
+        visible: true
+        color: Qt.color("transparent")
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
+
+        width: 300
+        height: 128
+        x: Qt.application.screens[0].virtualX + Qt.application.screens[0].width - width
+        y: Qt.application.screens[0].virtualY + 100
+        // x: 0
+        // y: 0
+
+        Row {
+            width: parent.width
+
+            TimerBar {
+                text: "Rejuv"
+                width: parent.width
+                visible: timer_controller.rejuv_buff_team_time_left != 0
+                percentageFilled: Number(timer_controller.rejuv_buff_team_time_left) / Number(240)
+                time: timer_controller.rejuv_buff_team_time_left
+            }
+        }
+            TimerBar {
+                text: "Enemy Rejuv"
+                width: parent.width
+                visible: timer_controller.rejuv_buff_enemy_time_left != 0
+                percentageFilled: Number(timer_controller.rejuv_buff_enemy_time_left) / Number(240)
+                time: timer_controller.rejuv_buff_enemy_time_left
+            }
     }
 }

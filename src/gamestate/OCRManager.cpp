@@ -152,7 +152,7 @@ int OCRManager::parse_souls(const QString& ocr_input)
     if (conversion_success) {
         return souls * multiplier;
     } else {
-        qDebug() << "Could not parse souls to number";
+        qDebug() << "Could not parse souls to number from source: " << ocr_input;
         return -1;
     }
 }

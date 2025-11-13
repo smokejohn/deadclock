@@ -17,6 +17,18 @@ Item {
     width: 300
     height: 32
 
+    function format_time(time_left) {
+        if (time_left < 60) {
+            return time_left + "s";
+        }
+
+        let minutes = Math.floor(time_left / 60);
+        let seconds = time_left % 60;
+
+        let padded_seconds = seconds < 10 ? "0" + seconds : seconds;
+        return minutes + ":" + padded_seconds;
+    }
+
     Rectangle {
         id: bar_background
         width: parent.width
@@ -50,7 +62,7 @@ Item {
                 right: bar_background.right
                 rightMargin: control.margins
             }
-            text: control.time
+            text: format_time(control.time)
             color: control.textColor
         }
     }

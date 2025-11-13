@@ -62,6 +62,12 @@ void TTSManager::handle_event(EventType type)
         case EventType::urn:
             speech->say("Urn spawns in " + QString::number(lead_time) + " seconds");
             break;
+        // case EventType::rejuv_buff_team_timeout:
+        //     speech->say("Your Teams Rejuvenator buff runs out in " + QString::number(lead_time) + " seconds");
+        //     break;
+        // case EventType::rejuv_buff_enemy_timeout:
+        //     speech->say("The Enemy Teams Rejuvenator buff runs out in " + QString::number(lead_time) + " seconds");
+        //     break;
         case EventType::minimap_drill:
             break;
         default:

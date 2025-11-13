@@ -58,6 +58,12 @@ void NotificationManager::handle_event(EventType type)
         case EventType::urn:
             message = "Urn spawns";
             break;
+        // case EventType::rejuv_buff_team_timeout:
+        //     message = "Your teams Rejuvenator buff runs out";
+        //     break;
+        // case EventType::rejuv_buff_enemy_timeout:
+        //     message = "The enemy teams Rejuvenator buff runs out";
+        //     break;
         case EventType::minimap_drill:
             break;
         default:

@@ -42,6 +42,7 @@ private:
     QWindow* timer_overlay;
     QWindow* notification_overlay;
     QWindow* minimap_overlay;
+    QWindow* timerbar_overlay;
 
 #ifdef PLATFORM_WINDOWS
     void add_dwm_window_decoration();

@@ -36,8 +36,8 @@ signals:
     void time_read(int elapsed_seconds);
     void souls_read(int team, int enemy);
     void rejuvenator_buff_read(int team, int enemy);
-    void rejuv_buff_gained();
-    void rejuv_buff_lost();
+    void rejuv_buff_team_changed(bool active);
+    void rejuv_buff_enemy_changed(bool active);
 
 private:
     void scan_gamestate();

@@ -13,15 +13,17 @@
 #include <qobject.h>
 
 #include "SettingsManager.h"
-#include "gamestate/GameStateTracker.h"
-#include "gamestate/OCRManager.h"
 #include "data/Common.h"
+#include "gamestate/GameStateTracker.h"
 
 class TimerController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString display_time READ display_time NOTIFY time_changed)
     Q_PROPERTY(bool is_running READ is_running NOTIFY running_changed)
+
+    Q_PROPERTY(int rejuv_buff_team_time_left MEMBER rejuv_buff_team_time_left NOTIFY time_changed)
+    Q_PROPERTY(int rejuv_buff_enemy_time_left MEMBER rejuv_buff_enemy_time_left NOTIFY time_changed)
 
 public:
     explicit TimerController(SettingsManager* settings_manager, QObject* parent = nullptr);
@@ -50,6 +52,8 @@ public slots:
 private slots:
     void update_time();
     void update_settings();
+    void update_rejuv_buff_team(bool active);
+    void update_rejuv_buff_enemy(bool active);
 
 private:
     void manage_timers();
@@ -60,8 +64,15 @@ private:
     int last_set_seconds { 20 };
     std::bitset<7> enabled_events;
 
+    bool rejuv_buff_team_active { false };
+    int rejuv_buff_team_gained_time { 0 };
+    bool rejuv_buff_enemy_active { false };
+    int rejuv_buff_enemy_gained_time { 0 };
+
+    int rejuv_buff_team_time_left { 0 };
+    int rejuv_buff_enemy_time_left { 0 };
+
     QTimer* timer;
     QPointer<SettingsManager> settings_manager { nullptr };
     GameStateTracker* gamestate_tracker;
-
 };

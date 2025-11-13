@@ -36,6 +36,10 @@ Application::Application(QObject* parent)
     minimap_overlay->setFlag(Qt::WindowDoesNotAcceptFocus, true);
     minimap_overlay->setFlag(Qt::WindowTransparentForInput, true);
 
+    timerbar_overlay = engine.rootObjects().at(1)->findChild<QWindow*>("timerbar_overlay");
+    timerbar_overlay->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+    timerbar_overlay->setFlag(Qt::WindowTransparentForInput, true);
+
 #ifdef PLATFORM_WINDOWS
     add_dwm_window_decoration();
 #endif
@@ -85,10 +89,12 @@ void Application::toggle_overlay_visible(bool visible)
         timer_overlay->show();
         notification_overlay->show();
         minimap_overlay->show();
+        timerbar_overlay->show();
     } else {
         timer_overlay->hide();
         notification_overlay->hide();
         minimap_overlay->hide();
+        timerbar_overlay->hide();
     }
 }
 

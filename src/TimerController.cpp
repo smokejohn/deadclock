@@ -1,9 +1,8 @@
 #include <QDebug>
 
 #include "SettingsManager.h"
-#include "gamestate/GameStateTracker.h"
 #include "TimerController.h"
-#include <tesseract/baseapi.h>
+#include "gamestate/GameStateTracker.h"
 
 TimerController::TimerController(SettingsManager* settings_manager, QObject* parent)
     : QObject(parent)
@@ -15,6 +14,8 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
     timer->setInterval(1000);
 
     connect(gamestate_tracker, &GameStateTracker::time_read, this, &TimerController::update_time_external);
+    connect(gamestate_tracker, &GameStateTracker::rejuv_buff_team_changed, this, &TimerController::update_rejuv_buff_team);
+    connect(gamestate_tracker, &GameStateTracker::rejuv_buff_enemy_changed, this, &TimerController::update_rejuv_buff_enemy);
     connect(settings_manager, &SettingsManager::settings_changed, this, &TimerController::update_settings);
 
     enabled_events.set();
@@ -105,6 +106,9 @@ void TimerController::manage_timers()
     static const int spawn_time_sinners { 480 };
     static const int spawn_time_mid_boss { 600 };
     int spawn_time_urn { 600 };
+
+    static const int rejuv_buff_duration { 240 };
+
     const int lead_time = settings_manager->load_setting("timer/lead_time").toInt();
     const int minimap_drill_interval = settings_manager->load_setting("timer/minimap_drill_interval").toInt();
 
@@ -151,6 +155,33 @@ void TimerController::manage_timers()
         elapsed_seconds % minimap_drill_interval == 0) {
         emit event_occured(EventType::minimap_drill);
     }
+
+    // // Rejuvenator
+    // if (rejuv_buff_team_active && elapsed_seconds == rejuv_buff_team_gained_time + rejuv_buff_duration - lead_time) {
+    //     emit event_occured(EventType::rejuv_buff_team_timeout);
+    // }
+    //
+    // if (rejuv_buff_enemy_active && elapsed_seconds == rejuv_buff_enemy_gained_time + rejuv_buff_duration - lead_time) {
+    //     emit event_occured(EventType::rejuv_buff_enemy_timeout);
+    // }
+
+    // TimerBars
+    if (rejuv_buff_team_active) {
+        rejuv_buff_team_time_left = rejuv_buff_team_gained_time + rejuv_buff_duration - elapsed_seconds;
+        if (rejuv_buff_team_time_left == 0) {
+            rejuv_buff_team_active = false;
+        }
+    } else {
+        rejuv_buff_team_time_left = 0;
+    }
+    if (rejuv_buff_enemy_active) {
+        rejuv_buff_enemy_time_left = rejuv_buff_enemy_gained_time + rejuv_buff_duration - elapsed_seconds;
+        if (rejuv_buff_enemy_time_left == 0) {
+            rejuv_buff_enemy_active = false;
+        }
+    } else {
+        rejuv_buff_enemy_time_left = 0;
+    }
 }
 
 bool TimerController::event_enabled(EventType type)
@@ -164,4 +195,20 @@ void TimerController::update_settings()
     // reverse order as std::bitset indexes from the right to the left;
     std::reverse(event_mask.begin(), event_mask.end());
     enabled_events = std::bitset<7>(event_mask.toStdString());
+}
+
+void TimerController::update_rejuv_buff_team(bool active)
+{
+    rejuv_buff_team_active = active;
+    if (rejuv_buff_team_active) {
+        rejuv_buff_team_gained_time = elapsed_seconds;
+    }
+}
+
+void TimerController::update_rejuv_buff_enemy(bool active)
+{
+    rejuv_buff_enemy_active = active;
+    if (rejuv_buff_enemy_active) {
+        rejuv_buff_enemy_gained_time = elapsed_seconds;
+    }
 }

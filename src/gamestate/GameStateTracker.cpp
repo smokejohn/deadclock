@@ -37,18 +37,30 @@ void GameStateTracker::scan_gamestate()
     }
 
     gamestate.gametime = ocr_manager->read_gametime();
-    emit time_read(gamestate.gametime);
-
     auto [souls_team, souls_enemy] = ocr_manager->read_souls();
     gamestate.souls_team = souls_team;
     gamestate.souls_enemy = souls_enemy;
 
+    // TODO: introduce check if we are in a match
+    if (gamestate.gametime == -1 && gamestate.souls_team == -1 && gamestate.souls_enemy == -1) {
+        qDebug() << "Couldn't parse time and souls, probably not in a game";
+        return;
+    }
+
+    emit time_read(gamestate.gametime);
+
     auto [rejuv_team, rejuv_enemy] = cv_manager->detect_rejuv_buff();
-    if (gamestate.rejuv_buff_team = 0 && rejuv_team > 0) {
-        emit rejuv_buff_gained();
+    if (gamestate.rejuv_buff_team == 0 && rejuv_team > 0) {
+        emit rejuv_buff_team_changed(true);
     }
     if (gamestate.rejuv_buff_team > 0 && rejuv_team == 0) {
-        emit rejuv_buff_lost();
+        emit rejuv_buff_team_changed(false);
+    }
+    if (gamestate.rejuv_buff_enemy == 0 && rejuv_enemy > 0) {
+        emit rejuv_buff_enemy_changed(true);
+    }
+    if (gamestate.rejuv_buff_enemy > 0 && rejuv_enemy == 0) {
+        emit rejuv_buff_enemy_changed(false);
     }
 
     gamestate.rejuv_buff_team = rejuv_team;

@@ -8,6 +8,8 @@ enum class EventType
     mid_boss,
     runes,
     urn,
+    // rejuv_buff_team_timeout,
+    // rejuv_buff_enemy_timeout,
     minimap_drill,
 };
 
