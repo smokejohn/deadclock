@@ -1,6 +1,6 @@
-# DeadClock
+# Deadclock
 
-An app to help you remember critical timings in valve's DeadLock game.
+An app to help you remember critical timings in valve's Deadlock game.
 
 <img src="https://github.com/smokejohn/deadclock/blob/master/img/deadclock_ui.png" width="250">
 
@@ -17,9 +17,13 @@ Currently has alerts for the following in game events:
 
 The lead time i.e. how many seconds before the event the alert occurs can be configured (5-30 seconds)
 
+### Drills
+Currently the only drill the app has is a minimap drill that flashes/highlights the minimap every x seconds to help with minimap and game state awareness.
+Suggestions are welcome!
+
 ### Overlay Window
-An overlay window that runs on top of DeadLock game window and shows a timer
-right under the ingame DeadLock timer. This window can be repositioned and then locked
+An overlay window that runs on top of Deadlock game window and shows a timer
+right under the ingame Deadlock timer. This window can be repositioned and then locked
 which makes it unresponsive to any input.
 
 ### Notifications
@@ -37,9 +41,10 @@ without having to tab out of the game.
 Reads and updates the in-game timer to update it's own internal timer via OCR from your screen
 
 ### Crossplattform
-Built with libraries that work on any OS this app should run on Windows, Linux and MacOS.
-Currently only builds for Windows are published and Linux builds will follow. 
-Mac builds will not be supplied since virtualizing MacOS is a PITA / not supported by Apple.
+Built with libraries that work on any OS this app should run on Windows and Linux.
+Currently only builds for Windows are published and Linux builds will only support X11, since
+Waylands design / more secure architecture makes accessing other client window content difficult.
+Any help on wayland support is highly appreciated.
 
 ## Installing
 
@@ -60,6 +65,7 @@ your choice. Then simply click the deadclock executable to start the app.
     * QuickControls2
     * TextToSpeech
 * Tesseract OCR
+* OpenCV
 
 ### Building on Windows
 Use MSYS2 to build the project with the MINGW-64 toolchain
@@ -73,6 +79,8 @@ pacman -S mingw-w64-x86_64-cmake
 pacman -S mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-declarative mingw-w64-x86_64-qt6-speech
 # tesseract-ocr and language data
 pacman -S mingw-w64-x86_64-tesseract-ocr mingw-w64-x84_64-tesseract-data-eng
+# OpenCV
+pacman -S mingw-w64-x86_64-opencv
 ```
 
 Since there is a bug in the mingw-w64-x86_64-leptonica pkgconfig file that gets
