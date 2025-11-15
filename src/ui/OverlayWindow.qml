@@ -387,6 +387,7 @@ Item {
             TimerBar {
                 text: "Enemy Rejuv"
                 width: parent.width
+                barColor: Qt.color("#ff4d00")
                 visible: timer_controller.rejuv_buff_enemy_time_left != 0
                 percentageFilled: Number(timer_controller.rejuv_buff_enemy_time_left) / Number(240)
                 time: timer_controller.rejuv_buff_enemy_time_left

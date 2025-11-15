@@ -31,6 +31,7 @@ public:
     void start_tracking();
     void stop_tracking();
     void set_scan_interval(unsigned int seconds = 5);
+    void reset_gamestate();
 
 signals:
     void time_read(int elapsed_seconds);

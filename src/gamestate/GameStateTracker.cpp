@@ -27,6 +27,11 @@ void GameStateTracker::set_scan_interval(unsigned int seconds)
     scan_timer->setInterval(scan_interval);
 }
 
+void GameStateTracker::reset_gamestate()
+{
+    gamestate = GameState();
+}
+
 void GameStateTracker::scan_gamestate()
 {
     gamestate.shop_open = cv_manager->is_shop_open();

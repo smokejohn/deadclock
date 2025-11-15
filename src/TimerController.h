@@ -66,10 +66,10 @@ private:
 
     bool rejuv_buff_team_active { false };
     int rejuv_buff_team_gained_time { 0 };
+    int rejuv_buff_team_time_left { 0 };
+
     bool rejuv_buff_enemy_active { false };
     int rejuv_buff_enemy_gained_time { 0 };
-
-    int rejuv_buff_team_time_left { 0 };
     int rejuv_buff_enemy_time_left { 0 };
 
     QTimer* timer;

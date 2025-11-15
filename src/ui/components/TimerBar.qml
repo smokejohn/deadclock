@@ -10,6 +10,7 @@ Item {
     property color barColor: Qt.color("#298753")
     property real percentageFilled: 1.0
     property color textColor: Qt.color("#fff")
+    property int fontSize: 20
     property string text: ""
     property string time: "00:00"
     property real margins: 8
@@ -52,6 +53,7 @@ Item {
                 leftMargin: control.margins
             }
             text: control.text
+            font.pixelSize: control.fontSize
             color: control.textColor
         }
 
@@ -63,6 +65,7 @@ Item {
                 rightMargin: control.margins
             }
             text: format_time(control.time)
+            font.pixelSize: control.fontSize
             color: control.textColor
         }
     }

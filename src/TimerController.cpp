@@ -59,6 +59,15 @@ void TimerController::set_time(int minutes, int seconds)
     last_set_minutes = minutes;
     last_set_seconds = seconds;
     elapsed_seconds = minutes * 60 + seconds;
+
+    rejuv_buff_enemy_time_left = 0;
+    rejuv_buff_enemy_gained_time = 0;
+    rejuv_buff_enemy_active = false;
+    rejuv_buff_team_time_left = 0;
+    rejuv_buff_team_gained_time = 0;
+    rejuv_buff_team_active = false;
+    gamestate_tracker->reset_gamestate();
+
     emit time_changed();
 }
 
