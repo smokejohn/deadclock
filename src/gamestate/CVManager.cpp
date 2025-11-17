@@ -15,7 +15,7 @@ constexpr auto REJUV_SCAN_REGION_TEAM_X { 0.4464 };  // 1143 / 2560
 constexpr auto REJUV_SCAN_REGION_ENEMY_X { 0.5140 }; // 1316 / 2560
 constexpr auto REJUV_SCAN_REGION_Y { 0.0278 };       // 40 / 1440
 constexpr auto REJUV_SCAN_REGION_SIZE { 0.0390 };    // 100 / 2560
-constexpr auto REJUV_SCAN_REGION_Y_TAB { 0.1187 };   // x 171 / 1440
+constexpr auto REJUV_SCAN_REGION_Y_TAB { 0.1187 };   // 171 / 1440
 
 // ESC icon when shop or game menu is opened
 constexpr auto ESC_ICON_REGION_X { 0.0074 };      // 19 / 2560
@@ -44,10 +44,14 @@ std::pair<int, double> CVManager::find_matches_contour(const cv::Mat& template_i
     cv::Mat template_processed {};
     cv::Mat target_processed {};
 
+    // Closing holes
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    cv::morphologyEx(target_img, target_processed, cv::MORPH_CLOSE, kernel);
+
     // Blurring
     cv::Size blursize(3, 3);
     cv::GaussianBlur(template_img, template_processed, blursize, 0);
-    cv::GaussianBlur(target_img, target_processed, blursize, 0);
+    cv::GaussianBlur(target_processed, target_processed, blursize, 0);
 
     // Edge detect
     cv::Canny(template_processed, template_processed, 100, 200);
@@ -172,8 +176,8 @@ std::pair<int, int> CVManager::detect_rejuv_buff()
 
     rejuv_team_capture_rect.setRect(x_pos_team, y_pos, size, size);
     rejuv_enemy_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
-    rejuv_team_tab_capture_rect.setRect(x_pos_team, y_pos, size, size);
-    rejuv_enemy_tab_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
+    rejuv_team_tab_capture_rect.setRect(x_pos_team, y_pos_tab, size, size);
+    rejuv_enemy_tab_capture_rect.setRect(x_pos_enemy, y_pos_tab, size, size);
 
     QPixmap rejuv_team_roi = screen->grabWindow(0,
                                                 rejuv_team_capture_rect.left(),

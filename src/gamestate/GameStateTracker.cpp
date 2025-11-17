@@ -61,7 +61,7 @@ void GameStateTracker::scan_gamestate()
     if (gamestate.rejuv_buff_team > 0 && rejuv_team == 0) {
         emit rejuv_buff_team_changed(false);
     }
-    if (rejuv_team > gamestate.rejuv_buff_enemy) {
+    if (rejuv_enemy > gamestate.rejuv_buff_enemy) {
         emit rejuv_buff_enemy_changed(true);
     }
     if (gamestate.rejuv_buff_enemy > 0 && rejuv_enemy == 0) {
