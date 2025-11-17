@@ -15,6 +15,7 @@ constexpr auto REJUV_SCAN_REGION_TEAM_X { 0.4464 };  // 1143 / 2560
 constexpr auto REJUV_SCAN_REGION_ENEMY_X { 0.5140 }; // 1316 / 2560
 constexpr auto REJUV_SCAN_REGION_Y { 0.0278 };       // 40 / 1440
 constexpr auto REJUV_SCAN_REGION_SIZE { 0.0390 };    // 100 / 2560
+constexpr auto REJUV_SCAN_REGION_Y_TAB { 0.1187 };   // x 171 / 1440
 
 // ESC icon when shop or game menu is opened
 constexpr auto ESC_ICON_REGION_X { 0.0074 };      // 19 / 2560
@@ -166,10 +167,13 @@ std::pair<int, int> CVManager::detect_rejuv_buff()
     int x_pos_enemy =
         static_cast<int>(REJUV_SCAN_REGION_ENEMY_X * static_cast<double>(screen->geometry().width()) + 0.5);
     int y_pos = static_cast<int>(REJUV_SCAN_REGION_Y * static_cast<double>(screen->geometry().height()) + 0.5);
+    int y_pos_tab = static_cast<int>(REJUV_SCAN_REGION_Y_TAB * static_cast<double>(screen->geometry().height()) + 0.5);
     int size = static_cast<int>(REJUV_SCAN_REGION_SIZE * static_cast<double>(screen->geometry().width()) + 0.5);
 
     rejuv_team_capture_rect.setRect(x_pos_team, y_pos, size, size);
     rejuv_enemy_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
+    rejuv_team_tab_capture_rect.setRect(x_pos_team, y_pos, size, size);
+    rejuv_enemy_tab_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
 
     QPixmap rejuv_team_roi = screen->grabWindow(0,
                                                 rejuv_team_capture_rect.left(),
@@ -183,9 +187,23 @@ std::pair<int, int> CVManager::detect_rejuv_buff()
                                                  rejuv_enemy_capture_rect.width(),
                                                  rejuv_enemy_capture_rect.height());
 
+    QPixmap rejuv_team_tab_roi = screen->grabWindow(0,
+                                                    rejuv_team_tab_capture_rect.left(),
+                                                    rejuv_team_tab_capture_rect.top(),
+                                                    rejuv_team_tab_capture_rect.width(),
+                                                    rejuv_team_tab_capture_rect.height());
+
+    QPixmap rejuv_enemy_tab_roi = screen->grabWindow(0,
+                                                     rejuv_enemy_tab_capture_rect.left(),
+                                                     rejuv_enemy_tab_capture_rect.top(),
+                                                     rejuv_enemy_tab_capture_rect.width(),
+                                                     rejuv_enemy_tab_capture_rect.height());
+
     QImage rejuv_icon_image = QImage(":/images/opencv/dl_rejuv_icon.png");
     cv::Mat target_region_team = qimage_to_cv_mat(rejuv_team_roi.toImage());
     cv::Mat target_region_enemy = qimage_to_cv_mat(rejuv_enemy_roi.toImage());
+    cv::Mat target_region_team_tab = qimage_to_cv_mat(rejuv_team_tab_roi.toImage());
+    cv::Mat target_region_enemy_tab = qimage_to_cv_mat(rejuv_enemy_tab_roi.toImage());
     cv::Mat rejuv_template = qimage_to_cv_mat(rejuv_icon_image);
 
     // Filtering by color range of rejuv icon to get mask
@@ -195,11 +213,16 @@ std::pair<int, int> CVManager::detect_rejuv_buff()
     mask_from_color_range(rejuv_template, rejuv_template, lower_bound, upper_bound);
     mask_from_color_range(target_region_team, target_region_team, lower_bound, upper_bound);
     mask_from_color_range(target_region_enemy, target_region_enemy, lower_bound, upper_bound);
+    mask_from_color_range(target_region_team_tab, target_region_team_tab, lower_bound, upper_bound);
+    mask_from_color_range(target_region_enemy_tab, target_region_enemy_tab, lower_bound, upper_bound);
 
     auto [matches_team, accuracy_team] = find_matches_contour(rejuv_template, target_region_team);
     auto [matches_enemy, accuracy_enemy] = find_matches_contour(rejuv_template, target_region_enemy);
 
-    return std::make_pair(matches_team, matches_enemy);
+    auto [matches_team_tab, accuracy_team_tab] = find_matches_contour(rejuv_template, target_region_team_tab);
+    auto [matches_enemy_tab, accuracy_enemy_tab] = find_matches_contour(rejuv_template, target_region_enemy_tab);
+
+    return std::make_pair(std::max(matches_team, matches_team_tab), std::max(matches_enemy, matches_enemy_tab));
 }
 
 cv::Mat CVManager::qimage_to_cv_mat(const QImage& input, bool clone_data)

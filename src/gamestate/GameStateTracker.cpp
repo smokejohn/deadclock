@@ -55,13 +55,13 @@ void GameStateTracker::scan_gamestate()
     emit time_read(gamestate.gametime);
 
     auto [rejuv_team, rejuv_enemy] = cv_manager->detect_rejuv_buff();
-    if (gamestate.rejuv_buff_team == 0 && rejuv_team > 0) {
+    if (rejuv_team > gamestate.rejuv_buff_team) {
         emit rejuv_buff_team_changed(true);
     }
     if (gamestate.rejuv_buff_team > 0 && rejuv_team == 0) {
         emit rejuv_buff_team_changed(false);
     }
-    if (gamestate.rejuv_buff_enemy == 0 && rejuv_enemy > 0) {
+    if (rejuv_team > gamestate.rejuv_buff_enemy) {
         emit rejuv_buff_enemy_changed(true);
     }
     if (gamestate.rejuv_buff_enemy > 0 && rejuv_enemy == 0) {

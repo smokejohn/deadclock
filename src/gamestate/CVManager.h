@@ -66,5 +66,7 @@ private:
 
     QRect rejuv_team_capture_rect;
     QRect rejuv_enemy_capture_rect;
+    QRect rejuv_team_tab_capture_rect;
+    QRect rejuv_enemy_tab_capture_rect;
     QRect esc_icon_capture_rect;
 };
