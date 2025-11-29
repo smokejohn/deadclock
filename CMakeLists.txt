@@ -40,10 +40,15 @@ set(SOURCES
 
 qt_add_executable(deadclock ${SOURCES})
 
+set_source_files_properties(src/ui/components/Constants.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(deadclock
     URI Deadclock.Ui
     VERSION 1.0
     QML_FILES
+        src/ui/components/Constants.qml
+        src/ui/components/Main.qml
+        src/ui/components/Settings.qml
+        src/ui/components/TitleBar.qml
         src/ui/components/DCButton.qml
         src/ui/components/TimerBar.qml
 )
@@ -63,6 +68,8 @@ qt_add_resources(deadclock "images"
         resources/images/deadclock_icon.ico
         resources/images/deadclock_icon.png
         resources/images/minimap_highlight.png
+        resources/images/gear_solid_full.svg
+        resources/images/xmark_solid_full.svg
 )
 
 qt_add_resources(deadclock "opencv_images"

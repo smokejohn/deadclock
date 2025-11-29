@@ -5,6 +5,7 @@
 #include <QPixmap>
 #include <QRegularExpression>
 #include <QScreen>
+#include <QDir>
 #include <utility>
 
 
@@ -65,15 +66,15 @@ OCRManager::~OCRManager()
 
 int OCRManager::read_gametime()
 {
-    auto ocr_input = detect_digits(timer_region);
+    auto ocr_input = detect_digits(timer_region, "timer");
     auto elapsed_gametime = parse_time_to_seconds(ocr_input);
     return elapsed_gametime;
 }
 
 std::pair<int, int> OCRManager::read_souls()
 {
-    auto ocr_input_team = detect_digits(souls_team_region);
-    auto ocr_input_enemy = detect_digits(souls_enemy_region);
+    auto ocr_input_team = detect_digits(souls_team_region, "souls_team");
+    auto ocr_input_enemy = detect_digits(souls_enemy_region, "souls_enemy");
 
     int souls_team = parse_souls(ocr_input_team);
     int souls_enemy = parse_souls(ocr_input_enemy);
@@ -81,14 +82,14 @@ std::pair<int, int> OCRManager::read_souls()
     return std::make_pair(souls_team, souls_enemy);
 }
 
-QString OCRManager::detect_digits(QRect region)
+QString OCRManager::detect_digits(QRect region, const std::string& region_name)
 {
     if (!ocr_engine) {
         qDebug() << "OCR engine not initialized";
         return "";
     }
 
-    auto target_region = capture_region(region);
+    auto target_region = capture_region(region, region_name);
 
     Pix* input_image = qimage_to_pix(target_region.toImage());
     if (!input_image) {
@@ -117,7 +118,7 @@ Pix* OCRManager::qimage_to_pix(const QImage& image)
     return pixReadMemBmp(hex.data(), data.size());
 }
 
-QPixmap OCRManager::capture_region(QRect region)
+QPixmap OCRManager::capture_region(QRect region, const std::string& name)
 {
     QScreen* screen = QGuiApplication::primaryScreen();
 
@@ -127,7 +128,19 @@ QPixmap OCRManager::capture_region(QRect region)
     }
 
     // qDebug() << "Capturing region: " << region;
-    return screen->grabWindow(0, region.left(), region.top(), region.width(), region.height());
+    auto capture = screen->grabWindow(0, region.left(), region.top(), region.width(), region.height());
+
+    if (debug_ocr) {
+        QDir dir("./ocr_captures");
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+
+        auto filepath = QString("./ocr_captures/%1_%2.png").arg(QString::number(number_of_scans), QString::fromStdString(name));
+        qDebug() << "Writing capture to: " << filepath;
+        capture.save(filepath);
+    }
+    return capture;
 }
 
 int OCRManager::parse_souls(const QString& ocr_input)
@@ -140,13 +153,13 @@ int OCRManager::parse_souls(const QString& ocr_input)
     // Do some primitive parsing
     auto souls_text = ocr_input.trimmed();
 
-    int multiplier {1};
+    int multiplier { 1 };
     if (souls_text.endsWith('k', Qt::CaseInsensitive)) {
         multiplier = 1000;
         souls_text.chop(1);
     }
 
-    bool conversion_success {false};
+    bool conversion_success { false };
     int souls = souls_text.toInt(&conversion_success);
 
     if (conversion_success) {

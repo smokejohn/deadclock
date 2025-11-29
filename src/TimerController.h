@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE void set_last_set_seconds(int seconds);
 
     QString display_time() const;
+    GameStateTracker* get_gamestate_tracker();
 
 signals:
     void time_changed();

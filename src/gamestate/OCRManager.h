@@ -24,13 +24,16 @@ public:
     explicit OCRManager(QObject* parent = nullptr);
     ~OCRManager();
 
-    QString detect_digits(QRect region);
+    QString detect_digits(QRect region, const std::string& region_name = "");
 
-    QPixmap capture_region(QRect region);
+    QPixmap capture_region(QRect region, const std::string& name = "");
     void save_to_disk(const QString& path);
 
     int read_gametime();
     std::pair<int, int> read_souls();
+
+    int number_of_scans { 0 };
+    bool debug_ocr { false };
 
 private:
     int parse_time_to_seconds(const QString& ocr_input);

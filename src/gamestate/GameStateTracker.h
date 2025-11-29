@@ -32,6 +32,10 @@ public:
     void stop_tracking();
     void set_scan_interval(unsigned int seconds = 5);
     void reset_gamestate();
+    Q_INVOKABLE void debug_tracking(bool debug);
+
+    CVManager* get_cv_manager();
+    OCRManager* get_ocr_manager();
 
 signals:
     void time_read(int elapsed_seconds);

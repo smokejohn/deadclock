@@ -20,6 +20,7 @@ Application::Application(QObject* parent)
 
     engine.rootContext()->setContextProperty("application", this);
     engine.rootContext()->setContextProperty("timer_controller", timer_controller);
+    engine.rootContext()->setContextProperty("gamestate_tracker", timer_controller->get_gamestate_tracker());
     engine.rootContext()->setContextProperty("settings", settings_manager);
     engine.rootContext()->setContextProperty("tts", tts_manager);
     engine.rootContext()->setContextProperty("notification", notification_manager);

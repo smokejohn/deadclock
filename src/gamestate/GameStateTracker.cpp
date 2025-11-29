@@ -32,27 +32,35 @@ void GameStateTracker::reset_gamestate()
     gamestate = GameState();
 }
 
+void GameStateTracker::debug_tracking(bool debug)
+{
+    qDebug() << "Setting debugging gamestate tracking: " << debug;
+    ocr_manager->debug_ocr = debug;
+}
+
 void GameStateTracker::scan_gamestate()
 {
+    ocr_manager->number_of_scans++;
     gamestate.shop_open = cv_manager->is_shop_open();
 
     if (gamestate.shop_open) {
         qDebug() << "Shop or Menu is open, cannot update gamestate";
         return;
     }
-
-    gamestate.gametime = ocr_manager->read_gametime();
+    auto gametime = ocr_manager->read_gametime();
     auto [souls_team, souls_enemy] = ocr_manager->read_souls();
-    gamestate.souls_team = souls_team;
-    gamestate.souls_enemy = souls_enemy;
 
     // TODO: introduce check if we are in a match
-    if (gamestate.gametime == -1 && gamestate.souls_team == -1 && gamestate.souls_enemy == -1) {
+    if (gametime == -1 && souls_team == -1 && souls_enemy == -1) {
         qDebug() << "Couldn't parse time and souls, probably not in a game";
         return;
     }
 
+    gamestate.gametime = gametime;
     emit time_read(gamestate.gametime);
+
+    gamestate.souls_team = souls_team;
+    gamestate.souls_enemy = souls_enemy;
 
     auto [rejuv_team, rejuv_enemy] = cv_manager->detect_rejuv_buff();
     if (rejuv_team > gamestate.rejuv_buff_team) {
@@ -76,4 +84,14 @@ void GameStateTracker::scan_gamestate()
     qDebug() << "shop open: " << gamestate.shop_open;
     qDebug() << "souls: " << gamestate.souls_team << " | " << gamestate.souls_enemy;
     qDebug() << "rejuv: " << gamestate.rejuv_buff_team << " | " << gamestate.rejuv_buff_enemy;
+}
+
+CVManager* GameStateTracker::get_cv_manager()
+{
+    return cv_manager;
+}
+
+OCRManager* GameStateTracker::get_ocr_manager()
+{
+    return ocr_manager;
 }

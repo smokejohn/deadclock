@@ -14,8 +14,12 @@ TimerController::TimerController(SettingsManager* settings_manager, QObject* par
     timer->setInterval(1000);
 
     connect(gamestate_tracker, &GameStateTracker::time_read, this, &TimerController::update_time_external);
-    connect(gamestate_tracker, &GameStateTracker::rejuv_buff_team_changed, this, &TimerController::update_rejuv_buff_team);
-    connect(gamestate_tracker, &GameStateTracker::rejuv_buff_enemy_changed, this, &TimerController::update_rejuv_buff_enemy);
+    connect(
+        gamestate_tracker, &GameStateTracker::rejuv_buff_team_changed, this, &TimerController::update_rejuv_buff_team);
+    connect(gamestate_tracker,
+            &GameStateTracker::rejuv_buff_enemy_changed,
+            this,
+            &TimerController::update_rejuv_buff_enemy);
     connect(settings_manager, &SettingsManager::settings_changed, this, &TimerController::update_settings);
 
     enabled_events.set();
@@ -170,7 +174,8 @@ void TimerController::manage_timers()
     //     emit event_occured(EventType::rejuv_buff_team_timeout);
     // }
     //
-    // if (rejuv_buff_enemy_active && elapsed_seconds == rejuv_buff_enemy_gained_time + rejuv_buff_duration - lead_time) {
+    // if (rejuv_buff_enemy_active && elapsed_seconds == rejuv_buff_enemy_gained_time + rejuv_buff_duration - lead_time)
+    // {
     //     emit event_occured(EventType::rejuv_buff_enemy_timeout);
     // }
 
@@ -220,4 +225,9 @@ void TimerController::update_rejuv_buff_enemy(bool active)
     if (rejuv_buff_enemy_active) {
         rejuv_buff_enemy_gained_time = elapsed_seconds;
     }
+}
+
+GameStateTracker* TimerController::get_gamestate_tracker()
+{
+    return gamestate_tracker;
 }
