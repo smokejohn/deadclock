@@ -47,7 +47,7 @@ Item {
                 width: parent.width
 
                 onToggled: {
-                    gamestate_tracker.debug_tracking(checked);
+                    gamestate_tracker.set_debug_tracking(checked);
                 }
             }
         }

@@ -1,27 +1,13 @@
 #include "CVManager.h"
 
 #include <QGuiApplication>
-#include <QPixmap>
-#include <QScreen>
+#include <QImage>
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/core/types.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-// percentages of full frame measured on 2560x1440
-// Rejuvenator buff icon regions for team and enemy
-constexpr auto REJUV_SCAN_REGION_TEAM_X { 0.4464 };  // 1143 / 2560
-constexpr auto REJUV_SCAN_REGION_ENEMY_X { 0.5140 }; // 1316 / 2560
-constexpr auto REJUV_SCAN_REGION_Y { 0.0278 };       // 40 / 1440
-constexpr auto REJUV_SCAN_REGION_SIZE { 0.0390 };    // 100 / 2560
-constexpr auto REJUV_SCAN_REGION_Y_TAB { 0.1187 };   // 171 / 1440
-
-// ESC icon when shop or game menu is opened
-constexpr auto ESC_ICON_REGION_X { 0.0074 };      // 19 / 2560
-constexpr auto ESC_ICON_REGION_Y { 0.9611 };      // 1384 / 1440
-constexpr auto ESC_ICON_REGION_WIDTH { 0.0289 };  // 72 / 2560
-constexpr auto ESC_ICON_REGION_HEIGHT { 0.0263 }; // 38 / 1440
 
 CVManager::CVManager(QObject* parent)
     : QObject(parent)
@@ -103,32 +89,11 @@ void CVManager::mask_from_color_range(const cv::Mat& input_img,
     result.assign(input_processed);
 }
 
-bool CVManager::is_shop_open()
+bool CVManager::is_shop_open(const QImage& region)
 {
-    QScreen* screen = QGuiApplication::primaryScreen();
-
-    if (!screen) {
-        qDebug() << " Could not get primary screen";
-        return false;
-    }
-
-    int region_x_pos = static_cast<int>(ESC_ICON_REGION_X * static_cast<double>(screen->geometry().width()) + 0.5);
-    int region_y_pos = static_cast<int>(ESC_ICON_REGION_Y * static_cast<double>(screen->geometry().height()) + 0.5);
-    int region_width = static_cast<int>(ESC_ICON_REGION_WIDTH * static_cast<double>(screen->geometry().width()) + 0.5);
-    int region_height =
-        static_cast<int>(ESC_ICON_REGION_HEIGHT * static_cast<double>(screen->geometry().height()) + 0.5);
-
-    esc_icon_capture_rect.setRect(region_x_pos, region_y_pos, region_width, region_height);
-
-    QPixmap esc_icon_roi = screen->grabWindow(0,
-                                              esc_icon_capture_rect.left(),
-                                              esc_icon_capture_rect.top(),
-                                              esc_icon_capture_rect.width(),
-                                              esc_icon_capture_rect.height());
-
     QImage esc_icon_template_image = QImage(":/images/opencv/dl_esc_icon.png");
     cv::Mat esc_icon_template = qimage_to_cv_mat(esc_icon_template_image);
-    cv::Mat esc_icon_target = qimage_to_cv_mat(esc_icon_roi.toImage());
+    cv::Mat esc_icon_target = qimage_to_cv_mat(region);
 
     mask_from_brightest(esc_icon_template, esc_icon_template, 0.90);
     mask_from_brightest(esc_icon_target, esc_icon_target, 0.90);
@@ -158,56 +123,16 @@ void CVManager::mask_from_brightest(const cv::Mat& input_img, cv::OutputArray re
     result.assign(processed_input);
 }
 
-std::pair<int, int> CVManager::detect_rejuv_buff()
+std::pair<int, int> CVManager::detect_rejuv_buff(const QImage& region_team,
+                                                 const QImage& region_team_tab,
+                                                 const QImage& region_enemy,
+                                                 const QImage& region_enemy_tab)
 {
-    QScreen* screen = QGuiApplication::primaryScreen();
-
-    if (!screen) {
-        qDebug() << "Could not get primary screen";
-        return std::make_pair(-1, -1);
-    }
-
-    int x_pos_team = static_cast<int>(REJUV_SCAN_REGION_TEAM_X * static_cast<double>(screen->geometry().width()) + 0.5);
-    int x_pos_enemy =
-        static_cast<int>(REJUV_SCAN_REGION_ENEMY_X * static_cast<double>(screen->geometry().width()) + 0.5);
-    int y_pos = static_cast<int>(REJUV_SCAN_REGION_Y * static_cast<double>(screen->geometry().height()) + 0.5);
-    int y_pos_tab = static_cast<int>(REJUV_SCAN_REGION_Y_TAB * static_cast<double>(screen->geometry().height()) + 0.5);
-    int size = static_cast<int>(REJUV_SCAN_REGION_SIZE * static_cast<double>(screen->geometry().width()) + 0.5);
-
-    rejuv_team_capture_rect.setRect(x_pos_team, y_pos, size, size);
-    rejuv_enemy_capture_rect.setRect(x_pos_enemy, y_pos, size, size);
-    rejuv_team_tab_capture_rect.setRect(x_pos_team, y_pos_tab, size, size);
-    rejuv_enemy_tab_capture_rect.setRect(x_pos_enemy, y_pos_tab, size, size);
-
-    QPixmap rejuv_team_roi = screen->grabWindow(0,
-                                                rejuv_team_capture_rect.left(),
-                                                rejuv_team_capture_rect.top(),
-                                                rejuv_team_capture_rect.width(),
-                                                rejuv_team_capture_rect.height());
-
-    QPixmap rejuv_enemy_roi = screen->grabWindow(0,
-                                                 rejuv_enemy_capture_rect.left(),
-                                                 rejuv_enemy_capture_rect.top(),
-                                                 rejuv_enemy_capture_rect.width(),
-                                                 rejuv_enemy_capture_rect.height());
-
-    QPixmap rejuv_team_tab_roi = screen->grabWindow(0,
-                                                    rejuv_team_tab_capture_rect.left(),
-                                                    rejuv_team_tab_capture_rect.top(),
-                                                    rejuv_team_tab_capture_rect.width(),
-                                                    rejuv_team_tab_capture_rect.height());
-
-    QPixmap rejuv_enemy_tab_roi = screen->grabWindow(0,
-                                                     rejuv_enemy_tab_capture_rect.left(),
-                                                     rejuv_enemy_tab_capture_rect.top(),
-                                                     rejuv_enemy_tab_capture_rect.width(),
-                                                     rejuv_enemy_tab_capture_rect.height());
-
     QImage rejuv_icon_image = QImage(":/images/opencv/dl_rejuv_icon.png");
-    cv::Mat target_region_team = qimage_to_cv_mat(rejuv_team_roi.toImage());
-    cv::Mat target_region_enemy = qimage_to_cv_mat(rejuv_enemy_roi.toImage());
-    cv::Mat target_region_team_tab = qimage_to_cv_mat(rejuv_team_tab_roi.toImage());
-    cv::Mat target_region_enemy_tab = qimage_to_cv_mat(rejuv_enemy_tab_roi.toImage());
+    cv::Mat target_region_team = qimage_to_cv_mat(region_team);
+    cv::Mat target_region_enemy = qimage_to_cv_mat(region_enemy);
+    cv::Mat target_region_team_tab = qimage_to_cv_mat(region_team_tab);
+    cv::Mat target_region_enemy_tab = qimage_to_cv_mat(region_enemy_tab);
     cv::Mat rejuv_template = qimage_to_cv_mat(rejuv_icon_image);
 
     // Filtering by color range of rejuv icon to get mask

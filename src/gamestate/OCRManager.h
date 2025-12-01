@@ -6,10 +6,8 @@
 #pragma once
 
 #include <QObject>
-#include <QPixmap>
-#include <QRect>
+#include <QImage>
 #include <QString>
-#include <QVariantMap>
 
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
@@ -24,16 +22,10 @@ public:
     explicit OCRManager(QObject* parent = nullptr);
     ~OCRManager();
 
-    QString detect_digits(QRect region, const std::string& region_name = "");
+    QString detect_digits(QImage region, const std::string& region_name = "");
 
-    QPixmap capture_region(QRect region, const std::string& name = "");
-    void save_to_disk(const QString& path);
-
-    int read_gametime();
-    std::pair<int, int> read_souls();
-
-    int number_of_scans { 0 };
-    bool debug_ocr { false };
+    int read_gametime(const QImage& region);
+    std::pair<int, int> read_souls(const QImage& region_team, const QImage& region_enemy);
 
 private:
     int parse_time_to_seconds(const QString& ocr_input);
@@ -42,7 +34,4 @@ private:
     PIX* qimage_to_pix(const QImage& image);
 
     std::unique_ptr<tesseract::TessBaseAPI> ocr_engine;
-    QRect timer_region;
-    QRect souls_team_region;
-    QRect souls_enemy_region;
 };

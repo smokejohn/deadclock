@@ -34,6 +34,7 @@ set(SOURCES
     src/input/Keyhook.cpp
     src/input/InputManager.cpp
     src/gamestate/GameStateTracker.cpp
+    src/gamestate/Regions.cpp
     src/gamestate/OCRManager.cpp
     src/gamestate/CVManager.cpp
 )

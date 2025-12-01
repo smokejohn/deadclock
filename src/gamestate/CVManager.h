@@ -18,8 +18,11 @@ public:
     explicit CVManager(QObject* parent = nullptr);
     ~CVManager();
 
-    std::pair<int, int> detect_rejuv_buff();
-    bool is_shop_open();
+    std::pair<int, int> detect_rejuv_buff(const QImage& region_team,
+                                          const QImage& region_team_tab,
+                                          const QImage& region_enemy,
+                                          const QImage& region_enemy_tab);
+    bool is_shop_open(const QImage& region);
 
     /**
      * @brief find matching contours from template in target
@@ -63,10 +66,4 @@ public:
 
 private:
     cv::Mat alpha_to_mask(const cv::Mat& input);
-
-    QRect rejuv_team_capture_rect;
-    QRect rejuv_enemy_capture_rect;
-    QRect rejuv_team_tab_capture_rect;
-    QRect rejuv_enemy_tab_capture_rect;
-    QRect esc_icon_capture_rect;
 };
