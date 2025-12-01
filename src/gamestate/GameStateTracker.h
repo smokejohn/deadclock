@@ -7,6 +7,7 @@
 
 #include <QDir>
 #include <QObject>
+#include <QImage>
 #include <QScreen>
 #include <QTimer>
 

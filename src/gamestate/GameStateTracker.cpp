@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QPixmap>
 #include <qguiapplication.h>
 
 GameStateTracker::GameStateTracker(QObject* parent)
