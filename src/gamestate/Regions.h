@@ -12,23 +12,25 @@
 // for positioning the capture area for ocr "independent" of screen resolution
 // TODO: maybe read these values from json so if deadlock ui changes we can easily adapt
 
+// The height of some region captures are increased by 11 pixels because when the player is dead
+// and spectating teammates a solid colored 11 pixel bar is added to the top of the UI
 // Ingame timer
-constexpr double TIMER_REGION_X { 0.4805 };
-constexpr double TIMER_REGION_WIDTH { 0.039 };
-constexpr double TIMER_REGION_HEIGHT { 0.0174 };
+constexpr double TIMER_REGION_X { 0.4805 }; // 1230 / 2560
+constexpr double TIMER_REGION_WIDTH { 0.0390 }; // 100 / 2560
+constexpr double TIMER_REGION_HEIGHT { 0.0250 }; // 25 + 11 / 1440
 
 // Current Souls for team and enemy
 constexpr double SOULS_TEAM_REGION_X { 0.4535 };  // 1161 / 2560
 constexpr double SOULS_ENEMY_REGION_X { 0.5199 }; // 1331 / 2560
 constexpr double SOULS_REGION_WIDTH { 0.0269 };   // 69 / 2560
-constexpr double SOULS_REGION_HEIGHT { 0.0243 };  // 35 / 1440
+constexpr double SOULS_REGION_HEIGHT { 0.0319 };  // 35 + 11 / 1440
 
 // Rejuvenator buff icon regions for team and enemy
 constexpr auto REJUV_REGION_TEAM_X { 0.4464 };  // 1143 / 2560
 constexpr auto REJUV_REGION_ENEMY_X { 0.5140 }; // 1316 / 2560
 constexpr auto REJUV_REGION_Y { 0.0278 };       // 40 / 1440
 constexpr auto REJUV_REGION_WIDTH { 0.0390 };    // 100 / 2560
-constexpr auto REJUV_REGION_HEIGHT { 0.0694 };    // 100 / 1440
+constexpr auto REJUV_REGION_HEIGHT { 0.0770 };    // 100 + 11 / 1440
 constexpr auto REJUV_REGION_TAB_Y { 0.1187 };   // 171 / 1440
 
 // ESC icon when shop or game menu is opened
