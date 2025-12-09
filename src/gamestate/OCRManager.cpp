@@ -12,7 +12,7 @@ OCRManager::OCRManager(QObject* parent)
     : QObject(parent)
     , ocr_engine(new tesseract::TessBaseAPI())
 {
-    if (ocr_engine->Init("./", "eng")) {
+    if (ocr_engine->Init("./", "retaildemo")) {
         qDebug() << "Could not initialize tesseract";
         ocr_engine.reset();
         return;

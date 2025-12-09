@@ -127,7 +127,7 @@ if(WIN32)
     target_compile_definitions(deadclock PRIVATE PLATFORM_WINDOWS)
 endif()
 
-set(ocr_data_path "${CMAKE_SOURCE_DIR}/resources/ocr/eng.traineddata")
+set(ocr_data_path "${CMAKE_SOURCE_DIR}/resources/ocr/retaildemo.traineddata")
 
 file(COPY "${ocr_data_path}"
      DESTINATION "${CMAKE_BINARY_DIR}"

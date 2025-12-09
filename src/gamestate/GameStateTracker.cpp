@@ -1,9 +1,10 @@
 #include "GameStateTracker.h"
 #include <QFile>
 #include <QGuiApplication>
-#include <QScreen>
 #include <QPixmap>
+#include <QScreen>
 #include <qguiapplication.h>
+#include <qnamespace.h>
 
 GameStateTracker::GameStateTracker(QObject* parent)
     : QObject(parent)
@@ -75,8 +76,12 @@ void GameStateTracker::scan_gamestate()
         save_screen_capture(esc_icon_capture, "esc_icon");
         return;
     }
-    auto gametime = ocr_manager->read_gametime(timer_capture);
-    auto [souls_team, souls_enemy] = ocr_manager->read_souls(souls_team_capture, souls_enemy_capture);
+    auto gametime = ocr_manager->read_gametime(
+        timer_capture.scaled(timer_capture.width() * 2, timer_capture.height() * 2, Qt::KeepAspectRatio));
+    auto [souls_team, souls_enemy] = ocr_manager->read_souls(
+        souls_team_capture.scaled(souls_team_capture.width() * 2, souls_team_capture.height() * 2, Qt::KeepAspectRatio),
+        souls_enemy_capture.scaled(
+            souls_enemy_capture.width() * 2, souls_enemy_capture.height() * 2, Qt::KeepAspectRatio));
 
     // TODO: introduce check if we are in a match
     if (gametime == -1 && souls_team == -1 && souls_enemy == -1 && !debug_tracking) {
